@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class AuthController extends Controller
@@ -48,9 +47,18 @@ class AuthController extends Controller
 
     public function profile(Request $request)
     {
+        $user = $request->user();
+
         return response()->json([
             'status' => 'success',
-            'user' => $request->user(),
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'foto' => $user->foto,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ],
         ], 200);
     }
 
@@ -60,9 +68,8 @@ class AuthController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username,' . $user->id_user . ',id_user',
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
             'foto' => 'nullable|image|max:2048',
-            'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         $user->name = $request->input('name');
@@ -70,13 +77,8 @@ class AuthController extends Controller
 
         // Handle photo upload
         if ($request->hasFile('foto')) {
-            $imagePath = $request->file('foto')->store('public/fotos');
+            $imagePath = $request->file('foto')->store('public/profile');
             $user->foto = basename($imagePath);
-        }
-
-        // Handle password update
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->input('password'));
         }
 
         $user->save();
@@ -84,7 +86,12 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Profile updated successfully',
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'foto' => $user->foto,
+            ],
         ], 200);
     }
 }
