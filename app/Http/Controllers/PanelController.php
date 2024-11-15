@@ -16,14 +16,14 @@ class PanelController extends Controller
     // Menyimpan data panel baru
     public function store(Request $request)
     {
-        $request->validate([
-            'lapisan' => 'required|string',
-            'no_app' => 'required|string',
-            'longitude' => 'required|numeric',
-            'latitude' => 'required|numeric',
-            'abd_no' => 'required|string',
-            'no_pondasi_tiang' => 'required|string',
-        ]);
+        // $request->validate([
+        //     'lapisan' => 'required|string',
+        //     'no_app' => 'required|string',
+        //     'longitude' => 'required|numeric',
+        //     'latitude' => 'required|numeric',
+        //     // 'abd_no' => 'required|string',
+        //     // 'no_pondasi_tiang' => 'required|string',
+        // ]);
 
         $dataPanel = DataPanel::create($request->all());
 

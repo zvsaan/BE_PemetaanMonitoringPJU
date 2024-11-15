@@ -17,7 +17,10 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 //User
-Route::get('/pjus', [PJUController::class, 'index']); 
+Route::get('/userpju', [PJUController::class, 'index']);
+Route::get('/userberita', [BeritaController::class, 'index']);
+Route::get('/userberita/{slug}', [BeritaController::class, 'showtextrandom']);
+Route::get('/userteams', [TeamController::class, 'index']); 
 
 //Admin
 Route::middleware('auth:sanctum')->group(function () {

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('published_date');
             $table->string('image_url')->nullable();
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+            $table->string('slug')->unique();
             $table->timestamps();
         });
     }

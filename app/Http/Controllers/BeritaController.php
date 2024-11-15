@@ -69,50 +69,61 @@ class BeritaController extends Controller
         return response()->json($berita);
     }
 
+    public function showtextrandom($slug)
+    {
+        $berita = Berita::where('slug', $slug)->first();
+
+        if (!$berita) {
+            return response()->json(['message' => 'Berita not found'], 404);
+        }
+
+        return response()->json($berita);
+    }
+
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-{
-    $berita = Berita::find($id);
+    {
+        $berita = Berita::find($id);
 
-    if (!$berita) {
-        return response()->json(['message' => 'Berita not found'], 404);
-    }
-
-    $validator = Validator::make($request->all(), [
-        'title' => 'string|max:255',
-        'content' => 'string',
-        'author' => 'nullable|string|max:255',
-        'published_date' => 'date',
-        'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validasi gambar
-        'status' => 'in:draft,published,archived',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json($validator->errors(), 422);
-    }
-
-    // Update data
-    $berita->fill($request->only(['title', 'content', 'author', 'published_date', 'status']));
-
-    // Update gambar jika ada gambar baru
-    if ($request->hasFile('image_url')) {
-        // Hapus gambar lama jika ada
-        if ($berita->image_url) {
-            $oldImagePath = str_replace(asset('storage/'), '', $berita->image_url);
-            Storage::disk('public')->delete($oldImagePath);
+        if (!$berita) {
+            return response()->json(['message' => 'Berita not found'], 404);
         }
 
-        // Simpan gambar baru
-        $imagePath = $request->file('image_url')->store('berita', 'public');
-        $berita->image_url = asset('storage/' . $imagePath);
+        $validator = Validator::make($request->all(), [
+            'title' => 'string|max:255',
+            'content' => 'string',
+            'author' => 'nullable|string|max:255',
+            'published_date' => 'date',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validasi gambar
+            'status' => 'in:draft,published,archived',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Update data
+        $berita->fill($request->only(['title', 'content', 'author', 'published_date', 'status']));
+
+        // Update gambar jika ada gambar baru
+        if ($request->hasFile('image_url')) {
+            // Hapus gambar lama jika ada
+            if ($berita->image_url) {
+                $oldImagePath = str_replace(asset('storage/'), '', $berita->image_url);
+                Storage::disk('public')->delete($oldImagePath);
+            }
+
+            // Simpan gambar baru
+            $imagePath = $request->file('image_url')->store('berita', 'public');
+            $berita->image_url = asset('storage/' . $imagePath);
+        }
+
+        $berita->save();
+
+        return response()->json($berita);
     }
-
-    $berita->save();
-
-    return response()->json($berita);
-}
 
 
     public function destroy($id)
