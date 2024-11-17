@@ -45,53 +45,21 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function profile(Request $request)
+    public function validateToken(Request $request)
     {
         $user = $request->user();
 
-        return response()->json([
-            'status' => 'success',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'username' => $user->username,
-                'foto' => $user->foto,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
-            ],
-        ], 200);
-    }
-
-    public function updateProfile(Request $request)
-    {
-        $user = $request->user();
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
-            'foto' => 'nullable|image|max:2048',
-        ]);
-
-        $user->name = $request->input('name');
-        $user->username = $request->input('username');
-
-        // Handle photo upload
-        if ($request->hasFile('foto')) {
-            $imagePath = $request->file('foto')->store('public/profile');
-            $user->foto = basename($imagePath);
+        if ($user) {
+            return response()->json([
+                'success' => 'true',
+                'message' => 'Token is valid',
+                'user' => $user,
+            ], 200);
         }
 
-        $user->save();
-
         return response()->json([
-            'status' => 'success',
-            'message' => 'Profile updated successfully',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'username' => $user->username,
-                'foto' => $user->foto,
-            ],
-        ], 200);
+            'status' => 'error',
+            'message' => 'Token is invalid or expired',
+        ], 401);
     }
 }

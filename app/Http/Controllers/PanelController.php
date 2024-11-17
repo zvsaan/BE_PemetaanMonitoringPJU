@@ -15,11 +15,9 @@ class PanelController extends Controller
         return Excel::download(new PanelsExport, 'DataPanel.xlsx');
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        $perPage = $request->query('per_page', 10);
-        $dataPanels = DataPanel::paginate($perPage);
-
+        $dataPanels = DataPanel::all();
         return response()->json($dataPanels);
     }
 

@@ -14,8 +14,7 @@ use App\Exports\PanelsExport;
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/profile', [AuthController::class, 'profile']);
-    Route::put('/profile', [AuthController::class, 'updateProfile']);
+    Route::post('/validate-token', [AuthController::class, 'validateToken']);
 });
 
 //Company Profile
@@ -23,11 +22,6 @@ Route::get('/userpju', [PJUController::class, 'index']);
 Route::get('/userberita', [BeritaController::class, 'index']);
 Route::get('/userberita/{slug}', [BeritaController::class, 'showtextrandom']);
 Route::get('/userteams', [TeamController::class, 'index']); 
-
-//Export Data Panel
-Route::get('/panels/export', function () {
-    return Excel::download(new PanelsExport, 'data_panels.xlsx');
-});
 
 //Admin
 Route::middleware('auth:sanctum')->group(function () {
@@ -47,19 +41,24 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Panel
     Route::get('/panels', [PanelController::class, 'index']); 
-    // Route::get('/dropdownpanels', [PanelController::class, 'dropdown']); 
     Route::get('/dropdownpanels', [PanelController::class, 'dropdownPanels']);
     Route::post('/panels', [PanelController::class, 'store']);
     Route::get('/panels/{id}', [PanelController::class, 'show']);
     Route::post('/panels/{id}', [PanelController::class, 'update']);
     Route::delete('/panels/{id}', [PanelController::class, 'destroy']);
     Route::post('/panels/import', [PanelController::class, 'import']);
+    Route::get('/panels/export', function () {
+        return Excel::download(new PanelsExport, 'data_panels.xlsx');
+    });
 
     //PJU
-    // Route::get('/pjus', [PJUController::class, 'index']); 
+    Route::get('/pjus', [PJUController::class, 'index']); 
     Route::post('/pjus', [PJUController::class, 'store']);
     Route::get('/pjus/{id}', [PJUController::class, 'show']);
     Route::post('/pjus/{id}', [PJUController::class, 'update']);
     Route::delete('/pjus/{id}', [PJUController::class, 'destroy']);
+    Route::get('/kecamatan-list', [PJUController::class, 'getKecamatanList']);
+    Route::get('/pjus/export', function () {
+        return Excel::download(new PanelsExport, 'data_pjus.xlsx');
+    });
 });
-Route::get('/pjus', [PJUController::class, 'index']); 

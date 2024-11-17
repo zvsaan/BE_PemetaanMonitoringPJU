@@ -6,35 +6,33 @@ use App\Models\DataPJU;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PjusExport;
 
 class PJUController extends Controller
 {
+    public function export()
+    {
+        return Excel::download(new PjusExport, 'DataPanel.xlsx');
+    }
 
     public function index(Request $request)
     {
-        $perPage = $request->query('per_page', 10);
-        $search = $request->query('search', '');
-        
-        $pjus = DataPJU::with('panel')
-            ->when($search, function ($query) use ($search) {
-                $query->where('no_tiang_baru', 'like', "%$search%")
-                    //   ->orWhere('kecamatan', 'like', "%$search%")
-                    ->orWhere('no_app', 'like', "%$search%");
-            })
-            ->paginate($perPage);
-
+        $pjus = DataPJU::with('panel')->get();
         return response()->json($pjus);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function getKecamatanList()
+    {
+        $kecamatan = DataPJU::select('kecamatan')->distinct()->orderBy('kecamatan')->get();
+        return response()->json($kecamatan);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'panel_id' => 'required|exists:data_panels,id_panel',
             'lapisan' => 'required|integer',
-            'no_app' => 'required|integer',
             'no_tiang_lama' => 'nullable|integer',
             'no_tiang_baru' => 'nullable|integer',
             'nama_jalan' => 'required|string|max:255',
@@ -89,7 +87,6 @@ class PJUController extends Controller
         $validator = Validator::make($request->all(), [
             'panel_id' => 'required|exists:data_panels,id_panel',
             'lapisan' => 'required|integer',
-            'no_app' => 'required|integer',
             'no_tiang_lama' => 'nullable|integer',
             'no_tiang_baru' => 'nullable|integer',
             'nama_jalan' => 'required|string|max:255',
@@ -135,24 +132,39 @@ class PJUController extends Controller
     /**
      * Update recommendations for all PJU records.
      */
-    public function updateRecommendations()
+    public function updateRekomendasi(Request $request)
     {
-        $pjus = DataPJU::all();
+        // Validasi data yang diterima
+        $request->validate([
+            'id_pju' => 'required|integer|exists:data_pjus,id_pju',
+        ]);
 
-        foreach ($pjus as $pju) {
-            if ($pju->tanggal_pemasangan_tiang && $pju->lifetime_tiang) {
-                $usiaTiang = Carbon::parse($pju->tanggal_pemasangan_tiang)->diffInYears(Carbon::now());
-                $pju->rekomendasi_tiang = $usiaTiang >= $pju->lifetime_tiang ? 'Perlu Diganti' : 'Baik';
-            }
+        // Ambil data PJU berdasarkan ID
+        $pju = DataPju::findOrFail($request->id_pju);
 
-            if ($pju->tanggal_pemasangan_lampu && $pju->lifetime_lampu) {
-                $usiaLampu = Carbon::parse($pju->tanggal_pemasangan_lampu)->diffInYears(Carbon::now());
-                $pju->rekomendasi_lampu = $usiaLampu >= $pju->lifetime_lampu ? 'Perlu Diganti' : 'Baik';
-            }
-
-            $pju->save();
+        // Update rekomendasi_tiang
+        if ($pju->tanggal_pemasangan_tiang) {
+            $pju->rekomendasi_tiang = $pju->tinggi_tiang >= 9
+                ? Carbon::parse($pju->tanggal_pemasangan_tiang)->addYears(5)->toDateString()
+                : Carbon::parse($pju->tanggal_pemasangan_tiang)->addYears(4)->toDateString();
         }
 
-        return response()->json(['message' => 'Rekomendasi diperbarui']);
+        // Update rekomendasi_lampu
+        if ($pju->tanggal_pemasangan_lampu) {
+            $pju->rekomendasi_lampu = match ($pju->daya_lampu) {
+                120 => Carbon::parse($pju->tanggal_pemasangan_lampu)->addYears(3)->toDateString(),
+                90 => Carbon::parse($pju->tanggal_pemasangan_lampu)->addYears(4)->toDateString(),
+                60 => Carbon::parse($pju->tanggal_pemasangan_lampu)->addYears(5)->toDateString(),
+                default => null,
+            };
+        }
+
+        // Simpan data
+        $pju->save();
+
+        return response()->json([
+            'message' => 'Rekomendasi berhasil diupdate',
+            'data' => $pju,
+        ]);
     }
 }
