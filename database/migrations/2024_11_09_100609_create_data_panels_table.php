@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id('id_panel');
             $table->string('lapisan');
             $table->string('no_app');
-            $table->decimal('longitude', 10, 7);
-            $table->decimal('latitude', 10, 7);
-            $table->string('abd_no');
-            $table->string('no_pondasi_tiang');
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->string('abd_no')->nullable();
+            $table->string('no_pondasi_tiang')->nullable();
             $table->integer('line1_120w')->nullable();
             $table->integer('line1_120w_2l')->nullable();
             $table->integer('line1_90w')->nullable();
@@ -30,8 +30,8 @@ return new class extends Migration
             $table->integer('jumlah_pju')->nullable();
             $table->integer('total_daya_beban')->nullable();
             $table->integer('daya_app')->nullable();
-            $table->decimal('daya_terpakai', 5, 2)->nullable();
-            $table->decimal('arus_beban', 5, 2)->nullable();
+            $table->string('daya_terpakai')->nullable();
+            $table->string('arus_beban')->nullable();
             $table->string('nama_jalan')->nullable();
             $table->string('desa_kel')->nullable();
             $table->string('kecamatan')->nullable();

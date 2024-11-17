@@ -26,8 +26,8 @@ class TeamController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'photo_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validasi foto
+            'description' => 'required|string',
+            'photo_url' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -78,9 +78,9 @@ class TeamController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:255',
             'position' => 'string|max:255',
-            'description' => 'nullable|string',
-            'photo_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validasi foto baru
-        ]);
+            'description' => 'required|string',
+            'photo_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);        
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);

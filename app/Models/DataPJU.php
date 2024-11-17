@@ -14,9 +14,26 @@ class DataPJU extends Model
     protected $primaryKey = 'id_pju';
 
     protected $fillable = [
-        'panel_id', 'lapisan', 'no_app', 'no_tiang_lama', 'no_tiang_baru',
-        'nama_jalan', 'kecamatan', 'tinggi_tiang', 'jenis_tiang', 
-        'daya_lampu', 'status_jalan', 'longitude', 'latitude'
+        'panel_id',
+        'lapisan',
+        'no_app',
+        'no_tiang_lama',
+        'no_tiang_baru',
+        'nama_jalan',
+        'kecamatan',
+        'tinggi_tiang',
+        'jenis_tiang',
+        'spesifikasi_tiang',
+        'daya_lampu',
+        'status_jalan',
+        'tanggal_pemasangan_tiang',
+        'tanggal_pemasangan_lampu',
+        'lifetime_tiang',
+        'lifetime_lampu',
+        'rekomendasi_tiang',
+        'rekomendasi_lampu',
+        'longitude',
+        'latitude',
     ];
 
     public function panel()
