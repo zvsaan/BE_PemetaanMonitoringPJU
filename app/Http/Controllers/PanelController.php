@@ -10,10 +10,6 @@ use App\Exports\PanelsExport;
 
 class PanelController extends Controller
 {
-    public function export()
-    {
-        return Excel::download(new PanelsExport, 'DataPanel.xlsx');
-    }
 
     public function index()
     {

@@ -22,15 +22,8 @@ class DataPJU extends Model
         'kecamatan',
         'tinggi_tiang',
         'jenis_tiang',
-        'spesifikasi_tiang',
         'daya_lampu',
         'status_jalan',
-        'tanggal_pemasangan_tiang',
-        'tanggal_pemasangan_lampu',
-        'lifetime_tiang',
-        'lifetime_lampu',
-        'rekomendasi_tiang',
-        'rekomendasi_lampu',
         'longitude',
         'latitude',
     ];
@@ -39,4 +32,14 @@ class DataPJU extends Model
     {
         return $this->belongsTo(DataPanel::class, 'panel_id', 'id_panel');
     }
-}
+
+    public function detailPengaduan()
+    {
+        return $this->hasMany(DetailPengaduan::class, 'pju_id', 'id_pju');
+    }
+
+    public function dataKonstruksis()
+    {
+        return $this->hasMany(DataKonstruksi::class, 'pju_id', 'id_pju');
+    }
+}   

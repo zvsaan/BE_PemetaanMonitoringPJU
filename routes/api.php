@@ -9,6 +9,10 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\PJUController;
 use App\Exports\PanelsExport;
+use App\Http\Controllers\GeoJsonController;
+use App\Http\Controllers\RiwayatPJUController;
+use App\Http\Controllers\RiwayatPanelController;
+use App\Http\Controllers\ExportController;
 
 //Auth
 Route::post('/login', [AuthController::class, 'login']);
@@ -19,9 +23,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //Company Profile
 Route::get('/userpju', [PJUController::class, 'index']);
+Route::get('/userpanel', [PanelController::class, 'index']);
+Route::get('/userpemetaanfilter', [PJUController::class, 'pemetaanMaps']);
+Route::get('/userkecamatanlist', [PJUController::class, 'getKecamatanList']);
 Route::get('/userberita', [BeritaController::class, 'index']);
 Route::get('/userberita/{slug}', [BeritaController::class, 'showtextrandom']);
 Route::get('/userteams', [TeamController::class, 'index']); 
+Route::get('/geojson', [GeoJsonController::class, 'getGeoJson']);
+Route::get('/geojson/all', [GeoJsonController::class, 'getAllGeoJson']);
 
 //Admin
 Route::middleware('auth:sanctum')->group(function () {
@@ -43,22 +52,41 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/panels', [PanelController::class, 'index']); 
     Route::get('/dropdownpanels', [PanelController::class, 'dropdownPanels']);
     Route::post('/panels', [PanelController::class, 'store']);
-    Route::get('/panels/{id}', [PanelController::class, 'show']);
     Route::post('/panels/{id}', [PanelController::class, 'update']);
     Route::delete('/panels/{id}', [PanelController::class, 'destroy']);
     Route::post('/panels/import', [PanelController::class, 'import']);
-    Route::get('/panels/export', function () {
-        return Excel::download(new PanelsExport, 'data_panels.xlsx');
-    });
 
     //PJU
     Route::get('/pjus', [PJUController::class, 'index']); 
     Route::post('/pjus', [PJUController::class, 'store']);
-    Route::get('/pjus/{id}', [PJUController::class, 'show']);
     Route::post('/pjus/{id}', [PJUController::class, 'update']);
     Route::delete('/pjus/{id}', [PJUController::class, 'destroy']);
     Route::get('/kecamatan-list', [PJUController::class, 'getKecamatanList']);
-    Route::get('/pjus/export', function () {
-        return Excel::download(new PanelsExport, 'data_pjus.xlsx');
-    });
+    Route::get('/filter-pju-by-panel', [PJUController::class, 'filterDataByPanel']);
+    Route::get('/export/pju', [PJUController::class, 'exportDataPJU']);
+
+    //Dashboard
+    // Route::get('/dashboard-data', [PJUController::class, 'getDashboardData']);
+
+    //Export
+    Route::get('/export/pju', [ExportController::class, 'exportDataPJU']);
+    Route::get('/export/panel', [ExportController::class, 'exportDataPanel']);
+    
 });
+Route::get('/dashboard-data', [PJUController::class, 'getDashboardData']);
+
+Route::get('/export/riwayat-panel/{id}', [ExportController::class, 'exportRiwayatPanel']);
+
+//Riwayat PJU
+Route::get('/riwayat-pju', [RiwayatPJUController::class, 'index']); 
+Route::get('/riwayat-pju/{id}', [RiwayatPJUController::class, 'getRiwayatByPJU']); 
+Route::post('/riwayat-pju', [RiwayatPJUController::class, 'store']);
+Route::post('/riwayat-pju/{id}', [RiwayatPJUController::class, 'update']);
+Route::delete('/riwayat-pju/{id}', [RiwayatPJUController::class, 'destroy']);
+
+//Riwayat Panel
+Route::get('/riwayat-panel', [RiwayatPanelController::class, 'index']); 
+Route::get('/riwayat-panel/{id}', [RiwayatPanelController::class, 'getRiwayatByPanel']); 
+Route::post('/riwayat-panel', [RiwayatPanelController::class, 'store']);
+Route::post('/riwayat-panel/{id}', [RiwayatPanelController::class, 'update']);
+Route::delete('/riwayat-panel/{id}', [RiwayatPanelController::class, 'destroy']);

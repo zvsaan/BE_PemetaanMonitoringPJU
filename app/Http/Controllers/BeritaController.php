@@ -15,6 +15,17 @@ class BeritaController extends Controller
         return response()->json($beritas);
     }
 
+    public function showtextrandom($slug)
+    {
+        $berita = Berita::where('slug', $slug)->first();
+
+        if (!$berita) {
+            return response()->json(['message' => 'Berita not found'], 404);
+        }
+
+        return response()->json($berita);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
