@@ -13,14 +13,15 @@ return new class extends Migration
             $table->foreignId('pju_id')->constrained('data_pjus', 'id_pju')->onDelete('cascade');
             $table->string('lokasi')->nullable();
             $table->date('tanggal_masalah')->nullable();
-            $table->string('jam_masalah')->nullable();
+            $table->time('jam_masalah')->nullable();
             $table->string('keterangan_masalah')->nullable();
             $table->string('uraian_masalah')->nullable();
             $table->date('tanggal_penyelesaian')->nullable();
-            $table->string('jam_penyelesaian')->nullable();
+            $table->time('jam_penyelesaian')->nullable();
             $table->string('durasi_penyelesaian')->nullable();
             $table->string('penyelesaian_masalah')->nullable();
-            $table->string('nomer_rujukan')->nullable();
+            $table->string('pencegahan')->nullable();
+            $table->string('nomor_rujukan')->nullable();
             $table->enum('status', ['Pending', 'Selesai', 'Proses'])->default('Pending');
             $table->timestamps();
         });

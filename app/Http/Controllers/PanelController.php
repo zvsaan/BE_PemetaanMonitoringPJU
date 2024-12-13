@@ -34,7 +34,7 @@ class PanelController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'lapisan' => 'required|string|max:255',
+            'lapisan' => 'nullable|string|max:255',
             'no_app' => 'required|string|max:255',
             'longitude' => 'nullable|numeric',
             'latitude' => 'nullable|numeric',
@@ -102,7 +102,7 @@ class PanelController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'lapisan' => 'required|string|max:255',
+            'lapisan' => 'nullable|string|max:255',
             'no_app' => 'required|string|max:255',
             'longitude' => 'nullable|numeric',
             'latitude' => 'nullable|numeric',

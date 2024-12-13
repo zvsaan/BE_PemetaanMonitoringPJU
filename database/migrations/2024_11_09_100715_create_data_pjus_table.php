@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('data_pjus', function (Blueprint $table) {
             $table->id('id_pju');
             $table->foreignId('panel_id')->constrained('data_panels', 'id_panel')->onDelete('cascade');
-            $table->string('lapisan');
+            $table->string('lapisan')->nullable();
             $table->integer('no_tiang_lama')->nullable();
             // $table->integer('no_tiang_baru');
             $table->integer('no_tiang_baru')->unique();

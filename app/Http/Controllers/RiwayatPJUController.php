@@ -3,101 +3,96 @@
 namespace App\Http\Controllers;
 
 use App\Models\RiwayatPJU;
+use App\Models\Pengaduan;
+use Illuminate\Support\Facades\DB;
+use App\Models\DetailPengaduan;
 use Illuminate\Http\Request;
 
-class RiwayatPJUController extends Controller
+class RiwayatPjuController extends Controller
 {
-    // Menampilkan semua riwayat PJU
-    public function index()
+    public function index($pju_id)
     {
-        $riwayatPjus = RiwayatPJU::with('pju')->get();
-        return response()->json($riwayatPjus);
-    }
+        $dataPJU = DB::table('data_pjus')->where('id_pju', $pju_id)->first();
+        $riwayatPjus = RiwayatPJU::where('pju_id', $pju_id)->get();
 
-    // Menampilkan riwayat PJU berdasarkan ID
-    public function show($id)
-    {
-        $riwayatPju = RiwayatPJU::with('pju')->find($id);
-
-        if (!$riwayatPju) {
-            return response()->json(['message' => 'Riwayat PJU not found'], 404);
-        }
-
-        return response()->json($riwayatPju);
-    }
-
-    // Get Riwayat PJU by id_pju
-    public function getRiwayatByPJU($id_pju)
-    {
-        $riwayatPJU = RiwayatPJU::where('pju_id', $id_pju)->get();
-
-        if ($riwayatPJU->isEmpty()) {
-            return response()->json([
-                'message' => 'Belum ada pengaduan atau kerusakan tercatat untuk ID PJU ' . $id_pju
-            ], 200);
-        }
+        $pengaduanDetails = DetailPengaduan::with('pengaduan')
+            ->where('pju_id', $pju_id)
+            ->get();
 
         return response()->json([
-            'data' => $riwayatPJU
-        ], 200);
+            'no_tiang_baru' => $dataPJU->no_tiang_baru ?? 'Unknown',
+            'riwayat_pjus' => $riwayatPjus,
+            'pengaduan_details' => $pengaduanDetails,
+        ]);
     }
 
-    // Membuat riwayat PJU baru
+    /**
+     * Menambahkan riwayat PJU baru.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'pju_id' => 'required|exists:data_pjus,id_pju',
             'lokasi' => 'nullable|string',
+            'tanggal_masalah' => 'nullable|date',
+            'jam_masalah' => 'nullable',
             'keterangan_masalah' => 'nullable|string',
             'uraian_masalah' => 'nullable|string',
             'tanggal_penyelesaian' => 'nullable|date',
+            'jam_penyelesaian' => 'nullable',
             'durasi_penyelesaian' => 'nullable|string',
             'penyelesaian_masalah' => 'nullable|string',
-            'nomer_rujukan' => 'nullable|string',
+            'pencegahan' => 'nullable|string',
+            'nomor_rujukan' => 'nullable|string',
             'status' => 'nullable|in:Pending,Selesai,Proses',
         ]);
 
         $riwayatPju = RiwayatPJU::create($validated);
 
-        return response()->json($riwayatPju, 201);
+        return response()->json([
+            'message' => 'Riwayat PJU berhasil ditambahkan.',
+            'riwayat_pju' => $riwayatPju,
+        ]);
     }
 
-    // Mengupdate riwayat PJU
+    /**
+     * Memperbarui riwayat PJU tertentu.
+     */
     public function update(Request $request, $id)
     {
-        $riwayatPju = RiwayatPJU::find($id);
-
-        if (!$riwayatPju) {
-            return response()->json(['message' => 'Riwayat PJU not found'], 404);
-        }
+        $riwayatPju = RiwayatPJU::findOrFail($id);
 
         $validated = $request->validate([
             'lokasi' => 'nullable|string',
+            'tanggal_masalah' => 'nullable|date',
+            'jam_masalah' => 'nullable',
             'keterangan_masalah' => 'nullable|string',
             'uraian_masalah' => 'nullable|string',
             'tanggal_penyelesaian' => 'nullable|date',
+            'jam_penyelesaian' => 'nullable',
             'durasi_penyelesaian' => 'nullable|string',
             'penyelesaian_masalah' => 'nullable|string',
-            'nomer_rujukan' => 'nullable|string',
-            'status' => 'required|in:Pending,Selesai,Proses',
+            'pencegahan' => 'nullable|string',
+            'nomor_rujukan' => 'nullable|string',
+            'status' => 'nullable|in:Pending,Selesai,Proses',
         ]);
 
         $riwayatPju->update($validated);
 
-        return response()->json($riwayatPju);
+        return response()->json([
+            'message' => 'Riwayat PJU berhasil diperbarui.',
+            'riwayat_pju' => $riwayatPju,
+        ]);
     }
 
-    // Menghapus riwayat PJU
+    /**
+     * Menghapus riwayat PJU tertentu.
+     */
     public function destroy($id)
     {
-        $riwayatPju = RiwayatPJU::find($id);
-
-        if (!$riwayatPju) {
-            return response()->json(['message' => 'Riwayat PJU not found'], 404);
-        }
-
+        $riwayatPju = RiwayatPJU::findOrFail($id);
         $riwayatPju->delete();
 
-        return response()->json(['message' => 'Riwayat PJU deleted successfully']);
+        return response()->json(['message' => 'Riwayat PJU berhasil dihapus.']);
     }
 }

@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RiwayatPJU extends Model
+class RiwayatPju extends Model
 {
     use HasFactory;
 
     protected $table = 'riwayat_pjus';
-    
+
     protected $primaryKey = 'id_riwayat_pju';
 
     protected $fillable = [
@@ -24,15 +24,14 @@ class RiwayatPJU extends Model
         'jam_penyelesaian',
         'durasi_penyelesaian',
         'penyelesaian_masalah',
-        'nomer_rujukan',
+        'pencegahan',
+        'nomor_rujukan',
         'status',
     ];
 
-    /**
-     * Definisikan hubungan dengan model Pju
-     */
+    // Relasi dengan data_pjus
     public function pju()
     {
-        return $this->belongsTo(DataPJU::class, 'pju_id');
+        return $this->belongsTo(DataPJU::class, 'pju_id', 'id_pju');
     }
 }

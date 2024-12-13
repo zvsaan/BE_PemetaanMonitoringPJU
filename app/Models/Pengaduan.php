@@ -20,7 +20,8 @@ class Pengaduan extends Model
         'lokasi',
         'foto_pengaduan',
         'tanggal_pengaduan',
-        'jam_pengaduan',
+        'jam_aduan',
+        'jam_penginformasian',
         'keterangan_masalah',
         'foto_penanganan',
         'uraian_masalah',
@@ -28,9 +29,14 @@ class Pengaduan extends Model
         'tanggal_penyelesaian',
         'durasi_penyelesaian',
         'penyelesaian_masalah',
+        'pencegahan_masalah',
+        'pengelompokan_masalah',
         'status',
     ];
 
+    /**
+     * Relasi ke DetailPengaduan
+     */
     public function detailPengaduans()
     {
         return $this->hasMany(DetailPengaduan::class, 'pengaduan_id', 'id_pengaduan');

@@ -19,20 +19,27 @@ class DetailPengaduan extends Model
         'pju_id',
     ];
 
+    /**
+     * Relasi ke Pengaduan
+     */
     public function pengaduan()
     {
         return $this->belongsTo(Pengaduan::class, 'pengaduan_id', 'id_pengaduan');
     }
 
-    // Relasi ke Panel
+    /**
+     * Relasi ke Panel
+     */
     public function panel()
     {
         return $this->belongsTo(DataPanel::class, 'panel_id', 'id_panel');
     }
 
-    // Relasi ke PJU
+    /**
+     * Relasi ke PJU
+     */
     public function pju()
     {
-        return $this->belongsTo(DataPju::class, 'pju_id', 'id_pju');
+        return $this->belongsTo(DataPJU::class, 'pju_id', 'id_pju');
     }
 }

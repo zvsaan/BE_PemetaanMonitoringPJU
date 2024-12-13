@@ -10,7 +10,7 @@ class RiwayatPanel extends Model
     use HasFactory;
 
     protected $table = 'riwayat_panels';
-    
+
     protected $primaryKey = 'id_riwayat_panel';
 
     protected $fillable = [
@@ -24,15 +24,14 @@ class RiwayatPanel extends Model
         'jam_penyelesaian',
         'durasi_penyelesaian',
         'penyelesaian_masalah',
-        'nomer_rujukan',
+        'pencegahan',
+        'nomor_rujukan',
         'status',
     ];
 
-    /**
-     * Definisikan hubungan dengan model Pju
-     */
+    // Relasi dengan data_pjus
     public function panel()
     {
-        return $this->belongsTo(DataPanel::class, 'panel_id');
+        return $this->belongsTo(DataPJU::class, 'panel_id', 'id_panel');
     }
 }

@@ -3,107 +3,96 @@
 namespace App\Http\Controllers;
 
 use App\Models\RiwayatPanel;
+use App\Models\Pengaduan;
+use Illuminate\Support\Facades\DB;
+use App\Models\DetailPengaduan;
 use Illuminate\Http\Request;
 
 class RiwayatPanelController extends Controller
 {
-    // Menampilkan semua riwayat Panel
-    public function index()
+    public function index($panel_id)
     {
-        $riwayatPanels = RiwayatPanel::with('panel')->get();
-        return response()->json($riwayatPanels);
-    }
+        $dataPanel = DB::table('data_panels')->where('id_panel', $panel_id)->first();
+        $riwayatPanels = RiwayatPanel::where('panel_id', $panel_id)->get();
 
-    // Menampilkan riwayat Panel berdasarkan ID
-    public function show($id)
-    {
-        $riwayatPanel = RiwayatPanel::with('panel')->find($id);
-
-        if (!$riwayatPanel) {
-            return response()->json(['message' => 'Riwayat Panel not found'], 404);
-        }
-
-        return response()->json($riwayatPanel);
-    }
-
-    // Get Riwayat Panel by panel_id
-    public function getRiwayatByPanel($id_panel)
-    {
-        $riwayatPanel = RiwayatPanel::where('panel_id', $id_panel)->get();
-
-        if ($riwayatPanel->isEmpty()) {
-            return response()->json([
-                'message' => 'Belum ada pengaduan atau kerusakan tercatat untuk ID Panel ' . $id_panel
-            ], 200);
-        }
+        $pengaduanDetails = DetailPengaduan::with('pengaduan')
+            ->where('panel_id', $panel_id)
+            ->get();
 
         return response()->json([
-            'data' => $riwayatPanel
-        ], 200);
+            'no_app' => $dataPanel->no_app ?? 'Unknown',
+            'riwayat_panels' => $riwayatPanels,
+            'pengaduan_details' => $pengaduanDetails,
+        ]);
     }
 
-    // Membuat riwayat Panel baru
+    /**
+     * Menambahkan riwayat Panel baru.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'panel_id' => 'required|exists:data_panels,id_panel',
             'lokasi' => 'nullable|string',
             'tanggal_masalah' => 'nullable|date',
-            'jam_masalah' => 'nullable|string',
+            'jam_masalah' => 'nullable',
             'keterangan_masalah' => 'nullable|string',
             'uraian_masalah' => 'nullable|string',
             'tanggal_penyelesaian' => 'nullable|date',
-            'jam_penyelesaian' => 'nullable|string',
+            'jam_penyelesaian' => 'nullable',
             'durasi_penyelesaian' => 'nullable|string',
             'penyelesaian_masalah' => 'nullable|string',
-            'nomer_rujukan' => 'nullable|string',
+            'pencegahan' => 'nullable|string',
+            'nomor_rujukan' => 'nullable|string',
             'status' => 'nullable|in:Pending,Selesai,Proses',
         ]);
 
-        $riwayatPanel = RiwayatPanel::create($validated);
+        $riwayatPanels = RiwayatPanel::create($validated);
 
-        return response()->json($riwayatPanel, 201);
+        return response()->json([
+            'message' => 'Riwayat Panel berhasil ditambahkan.',
+            'riwayat_panel' => $riwayatPanels,
+        ]);
     }
 
-    // Mengupdate riwayat Panel
+    /**
+     * Memperbarui riwayat Panel tertentu.
+     */
     public function update(Request $request, $id)
     {
-        $riwayatPanel = RiwayatPanel::find($id);
-
-        if (!$riwayatPanel) {
-            return response()->json(['message' => 'Riwayat Panel not found'], 404);
-        }
+        $riwayatPanels = RiwayatPanel::findOrFail($id);
 
         $validated = $request->validate([
             'lokasi' => 'nullable|string',
             'tanggal_masalah' => 'nullable|date',
-            'jam_masalah' => 'nullable|string',
+            'jam_masalah' => 'nullable',
             'keterangan_masalah' => 'nullable|string',
             'uraian_masalah' => 'nullable|string',
             'tanggal_penyelesaian' => 'nullable|date',
-            'jam_penyelesaian' => 'nullable|string',
+            'jam_penyelesaian' => 'nullable',
             'durasi_penyelesaian' => 'nullable|string',
             'penyelesaian_masalah' => 'nullable|string',
-            'nomer_rujukan' => 'nullable|string',
-            'status' => 'required|in:Pending,Selesai,Proses',
+            'pencegahan' => 'nullable|string',
+            'nomor_rujukan' => 'nullable|string',
+            'status' => 'nullable|in:Pending,Selesai,Proses',
         ]);
 
-        $riwayatPanel->update($validated);
+        $riwayatPanels->update($validated);
 
-        return response()->json($riwayatPanel);
+        return response()->json([
+            'message' => 'Riwayat Panel berhasil diperbarui.',
+            'riwayat_panel' => $riwayatPanels,
+        ]);
     }
 
-    // Menghapus riwayat Panel
+    /**
+     * Menghapus riwayat Panel tertentu.
+     */
     public function destroy($id)
     {
-        $riwayatPanel = RiwayatPanel::find($id);
+        $riwayatPanels = RiwayatPanel::findOrFail($id);
+        $riwayatPanels->delete();
 
-        if (!$riwayatPanel) {
-            return response()->json(['message' => 'Riwayat Panel not found'], 404);
-        }
-
-        $riwayatPanel->delete();
-
-        return response()->json(['message' => 'Riwayat Panel deleted successfully']);
+        return response()->json(['message' => 'Riwayat Panel berhasil dihapus.']);
     }
 }

@@ -19,7 +19,6 @@ class DataKonstruksi extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'panel_id',
         'pju_id',
         'tanggal_penggalian',
         'tanggal_pengecoran',
@@ -28,11 +27,6 @@ class DataKonstruksi extends Model
         'pemasangan_aksesories',
         'pemasangan_mcb',
     ];
-
-    public function panel()
-    {
-        return $this->belongsTo(DataPanel::class, 'panel_id', 'id_panel');
-    }
 
     // Relasi ke PJU
     public function pju()

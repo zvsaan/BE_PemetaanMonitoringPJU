@@ -10,14 +10,13 @@ return new class extends Migration
     {
         Schema::create('data_konstruksis', function (Blueprint $table) {
             $table->id('id_konstruksi');
-            $table->foreignId('panel_id')->constrained('data_panels', 'id_panel')->onDelete('cascade');
             $table->foreignId('pju_id')->constrained('data_pjus', 'id_pju')->onDelete('cascade');
-            $table->date('tanggal_penggalian');
-            $table->date('tanggal_pengecoran');
-            $table->date('pemasangan_tiang');
-            $table->date('grounding_finishing');
-            $table->date('pemasangan_aksesories');
-            $table->date('pemasangan_mcb');
+            $table->date('tanggal_penggalian')->nullable();
+            $table->date('tanggal_pengecoran')->nullable();
+            $table->date('pemasangan_tiang')->nullable();
+            $table->date('grounding_finishing')->nullable();
+            $table->date('pemasangan_aksesories')->nullable();
+            $table->date('pemasangan_mcb')->nullable();
             $table->timestamps();
         });
     }

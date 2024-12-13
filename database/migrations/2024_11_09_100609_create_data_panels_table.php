@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('data_panels', function (Blueprint $table) {
             $table->id('id_panel');
-            $table->string('lapisan');
+            $table->string('lapisan')->nullable();
             $table->string('no_app');
             $table->decimal('longitude', 10, 7)->nullable();
             $table->decimal('latitude', 10, 7)->nullable();

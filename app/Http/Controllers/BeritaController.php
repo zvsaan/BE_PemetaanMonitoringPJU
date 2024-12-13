@@ -15,6 +15,20 @@ class BeritaController extends Controller
         return response()->json($beritas);
     }
 
+    public function getBeritaPagination(Request $request)
+    {
+        $berita = Berita::orderBy('published_date', 'desc')->paginate(10);
+
+        return response()->json($berita);
+    }
+
+    public function getBeritaTerbaru()
+    {
+        $berita = Berita::orderBy('published_date', 'desc')->take(3)->get();
+
+        return response()->json($berita);
+    }
+
     public function showtextrandom($slug)
     {
         $berita = Berita::where('slug', $slug)->first();

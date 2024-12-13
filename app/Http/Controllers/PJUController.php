@@ -16,7 +16,6 @@ class PJUController extends Controller
 {
     public function exportDataPJU()
     {
-        // Menggunakan DataPJUExport dan mengekspor ke Excel
         return Excel::download(new DataPJUExport, 'data_pju.xlsx');
     }
 
@@ -24,17 +23,6 @@ class PJUController extends Controller
     {
         $pjus = DataPJU::with('panel')->get();
         return response()->json($pjus);
-    }
-
-    public function show($id)
-    {
-        $pju = DataPJU::with(['panel', 'dataKonstruksis'])->find($id);
-
-        if (!$pju) {
-            return response()->json(['message' => 'Data PJU not found'], 404);
-        }
-
-        return response()->json($pju);
     }
 
     public function pemetaanMaps(Request $request)
@@ -76,21 +64,14 @@ class PJUController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'panel_id' => 'required|exists:data_panels,id_panel',
-            'lapisan' => 'required|integer',
-            // 'no_tiang_lama' => 'nullable|integer',
-            // 'no_tiang_baru' => 'nullable|integer',
+            'lapisan' => 'nullable|integer',
             'no_tiang_baru' => 'required|unique:data_pjus,no_tiang_baru',
             'nama_jalan' => 'required|string|max:255',
             'kecamatan' => 'required|string|max:255',
             'tinggi_tiang' => 'required|integer',
             'jenis_tiang' => 'required|string|max:255',
-            // 'spesifikasi_tiang' => 'nullable|string|max:255',
             'daya_lampu' => 'required|integer',
             'status_jalan' => 'required|string|max:255',
-            // 'tanggal_pemasangan_tiang' => 'nullable|date',
-            // 'tanggal_pemasangan_lampu' => 'nullable|date',
-            // 'lifetime_tiang' => 'nullable|integer',
-            // 'lifetime_lampu' => 'nullable|integer',
             'longitude' => 'required|numeric',
             'latitude' => 'required|numeric',
         ]);
@@ -117,21 +98,14 @@ class PJUController extends Controller
 
         $validator = Validator::make($request->all(), [
             'panel_id' => 'required|exists:data_panels,id_panel',
-            'lapisan' => 'required|integer',
-            // 'no_tiang_lama' => 'nullable|integer',
-            // 'no_tiang_baru' => 'required|integer',
-            'no_tiang_baru' => 'required|unique:data_pjus,no_tiang_baru',
+            'lapisan' => 'nullable|integer',
+            'no_tiang_baru' => 'required|integer',
             'nama_jalan' => 'required|string|max:255',
             'kecamatan' => 'required|string|max:255',
             'tinggi_tiang' => 'required|integer',
             'jenis_tiang' => 'required|string|max:255',
-            // 'spesifikasi_tiang' => 'nullable|string|max:255',
             'daya_lampu' => 'required|integer',
             'status_jalan' => 'required|string|max:255',
-            // 'tanggal_pemasangan_tiang' => 'nullable|date',
-            // 'tanggal_pemasangan_lampu' => 'nullable|date',
-            // 'lifetime_tiang' => 'nullable|integer',
-            // 'lifetime_lampu' => 'nullable|integer',
             'longitude' => 'required|numeric',
             'latitude' => 'required|numeric',
         ]);
