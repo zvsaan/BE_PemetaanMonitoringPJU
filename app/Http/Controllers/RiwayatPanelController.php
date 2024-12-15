@@ -26,9 +26,45 @@ class RiwayatPanelController extends Controller
         ]);
     }
 
-    /**
-     * Menambahkan riwayat Panel baru.
-     */
+    public function getPanelStatus($panel_id)
+    {
+        $statuses = [];
+
+        // Ambil semua status dari RiwayatPanel
+        $riwayatStatuses = RiwayatPanel::where('panel_id', $panel_id)->pluck('status')->toArray();
+        $statuses = array_merge($statuses, $riwayatStatuses);
+
+        // Ambil semua status dari DetailPengaduan
+        $pengaduanStatuses = DetailPengaduan::where('panel_id', $panel_id)
+            ->with('pengaduan')
+            ->get()
+            ->pluck('pengaduan.status')
+            ->toArray();
+        $statuses = array_merge($statuses, $pengaduanStatuses);
+
+        // Prioritaskan status
+        if (in_array('Pending', $statuses)) {
+            return 'Pending';
+        } elseif (in_array('Proses', $statuses)) {
+            return 'Proses';
+        }
+
+        // Default ke Selesai jika tidak ada status Pending atau Proses
+        return 'Selesai';
+    }
+
+    public function getPanelsWithStatus()
+    {
+        $panels = DB::table('data_panels')->get();
+
+        $panelsWithStatus = $panels->map(function ($panel) {
+            $panel->status = $this->getPanelStatus($panel->id_panel);
+            return $panel;
+        });
+
+        return response()->json($panelsWithStatus);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -40,13 +76,34 @@ class RiwayatPanelController extends Controller
             'uraian_masalah' => 'nullable|string',
             'tanggal_penyelesaian' => 'nullable|date',
             'jam_penyelesaian' => 'nullable',
-            'durasi_penyelesaian' => 'nullable|string',
             'penyelesaian_masalah' => 'nullable|string',
             'pencegahan' => 'nullable|string',
             'nomor_rujukan' => 'nullable|string',
             'status' => 'nullable|in:Pending,Selesai,Proses',
         ]);
 
+        // Validasi status pengaduan terkait panel
+        $existingPengaduanStatuses = DetailPengaduan::where('panel_id', $validated['panel_id'])
+            ->whereHas('pengaduan', function ($query) {
+                $query->whereIn('status', ['Pending', 'Proses']);
+            })
+            ->exists();
+
+        if ($existingPengaduanStatuses) {
+            return response()->json([
+                'message' => 'Tidak dapat menambahkan riwayat baru. Masih ada Pengaduan dengan status "Pending" atau "Proses".',
+            ], 400);
+        }
+
+        // Hitung durasi penyelesaian (jika ada)
+        $validated['durasi_penyelesaian'] = $this->calculateDuration(
+            $validated['tanggal_masalah'] ?? null,
+            $validated['jam_masalah'] ?? null,
+            $validated['tanggal_penyelesaian'] ?? null,
+            $validated['jam_penyelesaian'] ?? null
+        );
+
+        // Simpan riwayat panel
         $riwayatPanels = RiwayatPanel::create($validated);
 
         return response()->json([
@@ -55,9 +112,6 @@ class RiwayatPanelController extends Controller
         ]);
     }
 
-    /**
-     * Memperbarui riwayat Panel tertentu.
-     */
     public function update(Request $request, $id)
     {
         $riwayatPanels = RiwayatPanel::findOrFail($id);
@@ -70,12 +124,19 @@ class RiwayatPanelController extends Controller
             'uraian_masalah' => 'nullable|string',
             'tanggal_penyelesaian' => 'nullable|date',
             'jam_penyelesaian' => 'nullable',
-            'durasi_penyelesaian' => 'nullable|string',
             'penyelesaian_masalah' => 'nullable|string',
             'pencegahan' => 'nullable|string',
             'nomor_rujukan' => 'nullable|string',
             'status' => 'nullable|in:Pending,Selesai,Proses',
         ]);
+
+        // Hitung durasi jika tanggal dan jam penyelesaian diubah
+        $validated['durasi_penyelesaian'] = $this->calculateDuration(
+            $validated['tanggal_masalah'] ?? $riwayatPanels->tanggal_masalah,
+            $validated['jam_masalah'] ?? $riwayatPanels->jam_masalah,
+            $validated['tanggal_penyelesaian'] ?? $riwayatPanels->tanggal_penyelesaian,
+            $validated['jam_penyelesaian'] ?? $riwayatPanels->jam_penyelesaian
+        );
 
         $riwayatPanels->update($validated);
 
@@ -85,9 +146,22 @@ class RiwayatPanelController extends Controller
         ]);
     }
 
-    /**
-     * Menghapus riwayat Panel tertentu.
-     */
+    private function calculateDuration($startDate, $startTime, $endDate, $endTime)
+    {
+        if ($startDate && $startTime && $endDate && $endTime) {
+            $start = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', "$startDate $startTime");
+            $end = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', "$endDate $endTime");
+
+            $diffInMinutes = $end->diffInMinutes($start);
+            $hours = intdiv($diffInMinutes, 60);
+            $minutes = $diffInMinutes % 60;
+
+            return "$hours jam, $minutes menit";
+        }
+
+        return null;
+    }
+
     public function destroy($id)
     {
         $riwayatPanels = RiwayatPanel::findOrFail($id);

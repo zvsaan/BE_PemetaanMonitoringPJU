@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\DataKonstruksiImport;
+use App\Imports\RiwayatPjuImport;
+use App\Imports\RiwayatPanelImport;
 
 class ImportController extends Controller
 {
@@ -31,6 +33,46 @@ class ImportController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal mengimpor data.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function importRiwayatPJU(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            Excel::import(new RiwayatPjuImport, $request->file('file'));
+
+            return response()->json([
+                'message' => 'Data berhasil diimport',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat mengimport data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function importRiwayatPanel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            Excel::import(new RiwayatPanelImport, $request->file('file'));
+
+            return response()->json([
+                'message' => 'Data berhasil diimport',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat mengimport data',
                 'error' => $e->getMessage(),
             ], 500);
         }

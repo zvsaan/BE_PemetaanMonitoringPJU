@@ -32,6 +32,6 @@ class RiwayatPanel extends Model
     // Relasi dengan data_pjus
     public function panel()
     {
-        return $this->belongsTo(DataPJU::class, 'panel_id', 'id_panel');
+        return $this->belongsTo(DataPanel::class, 'panel_id', 'id_panel');
     }
 }

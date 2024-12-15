@@ -5,51 +5,64 @@ namespace App\Exports;
 use App\Models\RiwayatPanel;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
 
-class RiwayatPanelExport implements FromCollection, WithHeadings, WithMapping
+class RiwayatPanelExport implements FromCollection, WithHeadings
 {
-    protected $riwayatData;
-
-    // Konstruktor untuk menerima data riwayat panel yang sudah difilter
-    public function __construct($riwayatData)
-    {
-        $this->riwayatData = $riwayatData;
-    }
-
-    // Fungsi untuk mengambil data dari koleksi
+    /**
+     * Mengambil data riwayat PJU untuk diekspor ke Excel.
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
-        return $this->riwayatData;
+        // Mengambil data Riwayat PJU dengan relasi ke PJU untuk mendapatkan No Tiang
+        $riwayatData = RiwayatPanel::with('panel')->get();
+
+        // Memformat data agar sesuai dengan kolom yang diinginkan
+        return $riwayatData->map(function ($item) {
+            return [
+                // 'ID Riwayat' => $item->id_riwayat_pju,
+                'Source' => 'Riwayat',
+                'No App' => $item->panel->no_app ?? 'N/A',
+                'Lokasi' => $item->lokasi,
+                'Tanggal Masalah' => $item->tanggal_masalah ? \Carbon\Carbon::parse($item->tanggal_masalah)->format('d M Y') : '-',
+                'Jam Masalah' => $item->jam_masalah ?? '-',
+                'Keterangan Masalah' => $item->keterangan_masalah,
+                'Uraian Masalah' => $item->uraian_masalah,
+                'Tanggal Penyelesaian' => $item->tanggal_penyelesaian ? \Carbon\Carbon::parse($item->tanggal_penyelesaian)->format('d M Y') : '-',
+                'Jam Penyelesaian' => $item->jam_penyelesaian ?? '-',
+                'Durasi Penyelesaian (Jam)' => $item->durasi_penyelesaian ?? '-',
+                'Penyelesaian Masalah' => $item->penyelesaian_masalah,
+                'Pencegahan' => $item->pencegahan,
+                'Nomor Rujukan' => $item->nomor_rujukan ?? '-',
+                'Status' => $item->status,
+            ];
+        });
     }
 
-    // Menentukan judul kolom di Excel
+    /**
+     * Mengatur heading untuk kolom Excel.
+     *
+     * @return array
+     */
     public function headings(): array
     {
         return [
-            'Lokasi', 'Keterangan Masalah', 'Uraian Masalah', 
-            'Tanggal Masalah', 'Jam Masalah', 'Tanggal Penyelesaian',
-            'Jam Penyelesaian', 'Durasi Penyelesaian', 'Penyelesaian Masalah',
-            'Nomer Rujukan', 'Status'
-        ];
-    }
-
-    // Menentukan bagaimana setiap baris data akan di-mapping
-    public function map($riwayat): array
-    {
-        return [
-            // $riwayat->id_riwayat_panel,
-            $riwayat->lokasi,
-            $riwayat->keterangan_masalah,
-            $riwayat->uraian_masalah,
-            $riwayat->tanggal_masalah,
-            $riwayat->jam_masalah,
-            $riwayat->tanggal_penyelesaian,
-            $riwayat->jam_penyelesaian,
-            $riwayat->durasi_penyelesaian,
-            $riwayat->penyelesaian_masalah,
-            $riwayat->nomer_rujukan,
-            $riwayat->status,
+            // 'ID Riwayat',
+            'Source',
+            'No App', // Kolom No Tiang
+            'Lokasi',
+            'Tanggal Masalah',
+            'Jam Masalah',
+            'Keterangan Masalah',
+            'Uraian Masalah',
+            'Tanggal Penyelesaian',
+            'Jam Penyelesaian',
+            'Durasi Penyelesaian (Jam)',
+            'Penyelesaian Masalah',
+            'Pencegahan',
+            'Nomor Rujukan',
+            'Status',
         ];
     }
 }

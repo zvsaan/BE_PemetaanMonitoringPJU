@@ -25,22 +25,6 @@ class PJUController extends Controller
         return response()->json($pjus);
     }
 
-    public function pemetaanMaps(Request $request)
-    {
-        $kecamatan = $request->query('kecamatan');
-
-        if ($kecamatan) {
-            $pjus = DataPJU::where('kecamatan', $kecamatan)->get();
-        } else {
-            $pjus = collect();
-        }
-
-        return response()->json([
-            'data_count' => $pjus->count(),
-            'data' => $pjus,
-        ]);
-    }
-
     public function filterDataByPanel(Request $request)
     {
         $selectedPanel = $request->query('panel_id');
@@ -133,19 +117,5 @@ class PJUController extends Controller
         $pju->delete();
 
         return response()->json(['message' => 'Data PJU deleted successfully']);
-    }
-
-    public function getDashboardData()
-    {
-        $totalPJU = DataPJU::count();
-        $totalPanel = DataPanel::count();
-        $totalRiwayatPanel = RiwayatPanel::count();
-        $totalRiwayatPJU = RiwayatPJU::count();
-        return response()->json([
-            'total_pju' => $totalPJU,
-            'total_panel' => $totalPanel,
-            'total_riwayat_panel' => $totalRiwayatPanel,
-            'total_riwayat_pju' => $totalRiwayatPJU,
-        ]);
     }
 }

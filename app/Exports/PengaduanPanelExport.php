@@ -6,18 +6,18 @@ use App\Models\Pengaduan;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class PengaduanExport implements FromCollection, WithHeadings
+class PengaduanPanelExport implements FromCollection, WithHeadings
 {
     public function collection()
     {
         $pengaduanData = Pengaduan::whereHas('detailPengaduans', function ($query) {
-            $query->whereNotNull('pju_id'); 
+            $query->whereNotNull('panel_id'); 
         })
-        ->with('detailPengaduans.pju')
+        ->with('detailPengaduans.panel')
         ->get();
 
         return $pengaduanData->map(function ($pengaduan) {
-            $noTiang = $pengaduan->detailPengaduans->first()->pju->no_tiang_baru ?? 'N/A';
+            $noTiang = $pengaduan->detailPengaduans->first()->panel->no_app ?? 'N/A';
 
             return [
                 'Source' => 'Pengaduan',
@@ -48,7 +48,7 @@ class PengaduanExport implements FromCollection, WithHeadings
             'Nomor Pengaduan',
             'Pelapor',
             'Lokasi',
-            'No Tiang',
+            'No App',
             'Kondisi Masalah',
             'Tanggal Pengaduan',
             'Jam Aduan',

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('uraian_masalah')->nullable();
             $table->date('tanggal_penyelesaian')->nullable();
             $table->time('jam_penyelesaian')->nullable();
-            $table->integer('durasi_penyelesaian')->nullable();
+            $table->string('durasi_penyelesaian')->nullable();
             $table->string('penyelesaian_masalah')->nullable();
             $table->string('pencegahan')->nullable();
             $table->string('nomor_rujukan')->nullable();

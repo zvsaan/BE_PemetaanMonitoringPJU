@@ -6,17 +6,17 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class AllRiwayatPjuExport implements FromCollection, WithHeadings
+class AllRiwayatPanelExport implements FromCollection, WithHeadings
 {
     public function collection()
     {
-        // Data dari tabel riwayat_pjus
-        $riwayat = \App\Models\RiwayatPJU::with('pju')
+        // Data dari tabel riwayat_panels
+        $riwayat = \App\Models\RiwayatPanel::with('panel')
             ->get()
             ->map(function ($item) {
                 return [
                     'source' => 'Riwayat',
-                    'no_tiang' => $item->pju->no_tiang_baru ?? 'N/A',
+                    'no_app' => $item->panel->no_app ?? 'N/A',
                     'lokasi' => $item->lokasi,
                     'tanggal_masalah' => $item->tanggal_masalah,
                     'jam_masalah' => $item->jam_masalah,
@@ -32,16 +32,16 @@ class AllRiwayatPjuExport implements FromCollection, WithHeadings
                 ];
             });
 
-        // Data dari tabel pengaduan yang terkait dengan PJU
+        // Data dari tabel pengaduan yang terkait dengan panel
         $pengaduan = \App\Models\Pengaduan::whereHas('detailPengaduans', function ($query) {
-            $query->whereNotNull('pju_id'); // Hanya detail pengaduan yang terkait PJU
+            $query->whereNotNull('panel_id'); // Hanya detail pengaduan yang terkait panel
         })
-        ->with('detailPengaduans.pju')
+        ->with('detailPengaduans.panel')
         ->get()
         ->map(function ($item) {
             return [
                 'source' => 'Pengaduan',
-                'no_tiang' => $item->detailPengaduans->first()->pju->no_tiang_baru ?? 'N/A',
+                'no_app' => $item->detailPengaduans->first()->panel->no_app ?? 'N/A',
                 'lokasi' => $item->lokasi,
                 'tanggal_masalah' => $item->tanggal_pengaduan,
                 'jam_masalah' => $item->jam_aduan,
@@ -64,7 +64,7 @@ class AllRiwayatPjuExport implements FromCollection, WithHeadings
     {
         return [
             'Source',
-            'No Tiang',
+            'No App',
             'Lokasi',
             'Tanggal Masalah',
             'Jam Masalah',
