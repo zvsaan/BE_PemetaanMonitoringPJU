@@ -29,9 +29,11 @@ class Berita extends Model
         parent::boot();
 
         static::creating(function ($berita) {
-            do {
-                $slug = Str::random(16);
-            } while (Berita::where('slug', $slug)->exists());
+            $slug = Str::slug($berita->title);
+
+            while (Berita::where('slug', $slug)->exists()) {
+                $slug = Str::slug($berita->title) . '-' . Str::random(5);
+            }
 
             $berita->slug = $slug;
         });

@@ -51,7 +51,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/panels/{id}', [PanelController::class, 'update']);
     Route::delete('/panels/{id}', [PanelController::class, 'destroy']);
 
-
+    //Pemetaan
+    Route::get('/panels-with-status', [RiwayatPanelController::class, 'getPanelsWithStatus']);
+    Route::get('/pjus-with-status', [RiwayatPJUController::class, 'getPjusWithStatus']);
 
     //PJU
     Route::get('/pjus', [PJUController::class, 'index']); 
@@ -110,7 +112,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/export-riwayat-pju/riwayat', [ExportController::class, 'exportRiwayatPJU']);
     Route::get('/export-riwayat-panel/riwayat', [ExportController::class, 'exportRiwayatPanel']);
 });
-
-    //Pemetaan
-    Route::get('/panels-with-status', [RiwayatPanelController::class, 'getPanelsWithStatus']);
-    Route::get('/pjus-with-status', [RiwayatPJUController::class, 'getPjusWithStatus']);

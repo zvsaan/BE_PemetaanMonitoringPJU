@@ -37,9 +37,4 @@ class DataPJU extends Model
     {
         return $this->hasMany(DetailPengaduan::class, 'pju_id', 'id_pju');
     }
-
-    // public function dataKonstruksis()
-    // {
-    //     return $this->hasMany(DataKonstruksi::class, 'pju_id', 'id_pju');
-    // }
 }   
