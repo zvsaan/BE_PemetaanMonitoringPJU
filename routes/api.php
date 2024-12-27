@@ -15,6 +15,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\KonstruksiController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SuperAdminController;
 
 // Route::get('/userberita', [BeritaController::class, 'index']);
 Route::get('/userberita', [BeritaController::class, 'getBeritaPagination']);
@@ -29,8 +30,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/validate-token', [AuthController::class, 'validateToken']);
 });
 
+//SuperAdmin
+Route::middleware(['auth:sanctum', 'role:superadmin'])->group(function () {
+    Route::get('/superadmin/dashboard-data', [SuperAdminController::class, 'getDashboardData']);
+    Route::get('/users', [SuperAdminController::class, 'index']);
+    Route::post('/users', [SuperAdminController::class, 'store']);
+    Route::get('/users/{id}', [SuperAdminController::class, 'show']);
+    Route::put('/users/{id}', [SuperAdminController::class, 'update']);
+    Route::delete('/users/{id}', [SuperAdminController::class, 'destroy']);
+    Route::get('/superadmin/dashboard-data', [DashboardController::class, 'dashboardUserData']); 
+});
+
 //Admin
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum', 'role:admin')->group(function () {
     //Berita
     Route::get('/berita', [BeritaController::class, 'index']); 
     Route::post('/berita', [BeritaController::class, 'store']);
@@ -111,4 +123,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/export-riwayat-pju/riwayat', [ExportController::class, 'exportRiwayatPJU']);
     Route::get('/export-riwayat-panel/riwayat', [ExportController::class, 'exportRiwayatPanel']);
+});
+
+//Admin
+Route::middleware('auth:sanctum', 'role:visitor')->group(function () {
+    Route::get('/visitor/panels', [PanelController::class, 'index']); 
+    Route::get('/visitor/panels-with-status', [RiwayatPanelController::class, 'getPanelsWithStatus']);
+    Route::get('/visitor/pjus-with-status', [RiwayatPJUController::class, 'getPjusWithStatus']);
+    Route::get('/visitor/kecamatan-list', [PJUController::class, 'getKecamatanList']);
+    Route::get('/visitor/pjus', [PJUController::class, 'index']); 
+    Route::get('/visitor/riwayat-pju/{pju_id}', [RiwayatPJUController::class, 'index']);
+    Route::get('/visitor/riwayat-panel/{panel_id}', [RiwayatPanelController::class, 'index']);
+    Route::get('/visitor/konstruksi', [KonstruksiController::class, 'index']);
+    Route::get('/visitor/dashboard-data', [DashboardController::class, 'getDashboardData']);
 });

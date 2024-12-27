@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\DataPJU;
 use App\Models\DataPanel;
 use App\Models\RiwayatPanel;
@@ -84,5 +85,23 @@ class DashboardController extends Controller
             'avg_riwayat_pju' => round($avgRiwayatPerPJU, 2),
             'avg_riwayat_panel' => round($avgRiwayatPerPanel, 2),
         ]);
+    }
+
+    public function dashboardUserData()
+    {
+        // $superAdminCount = User::where('role', 'superadmin')->count();
+        $adminCount = User::where('role', 'admin')->count();
+        $dishubCount = User::where('role', 'dishub')->count();
+        $visitorCount = User::where('role', 'visitor')->count();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'userdata_count' => $adminCount + $dishubCount + $visitorCount,
+                'admin_count' => $adminCount,
+                'dishub_count' => $dishubCount,
+                'visitor_count' => $visitorCount
+            ]
+        ], 200);
     }
 }

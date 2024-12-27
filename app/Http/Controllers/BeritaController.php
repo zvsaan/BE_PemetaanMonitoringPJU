@@ -52,21 +52,34 @@ class BeritaController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $imagePath = $request->file('image_url')->store('berita', 'public');
+        try {
+            $imagePath = $request->file('image_url')->store('berita', 'public');
 
-        $berita = Berita::create([
-            'title' => $request->title,
-            'content' => $request->content,
-            'author' => $request->author,
-            'published_date' => $request->published_date,
-            'image_url' => asset('storage/' . $imagePath),
-            'status' => $request->status,
-        ]);
+            $berita = Berita::create([
+                'title' => $request->title,
+                'content' => $request->content,
+                'author' => $request->author,
+                'published_date' => $request->published_date,
+                'image_url' => asset('storage/' . $imagePath),
+                'status' => $request->status,
+            ]);
 
-        return response()->json($berita, 201);
+            return response()->json([
+                'message' => 'Berita berhasil disimpan',
+                'data' => $berita,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menyimpan berita',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function update(Request $request, $id)

@@ -15,19 +15,31 @@ class UserSeeder extends Seeder
     {
         // Membuat admin default
         User::create([
-            'username' => 'adminuser',
-            'name' => 'Admin 1',
-            'role' => 'admin',
+            'username' => 'superadminuser',
+            'name' => 'SUPER ADMIN',
+            'role' => 'superadmin',
             'password' => Hash::make('password123'),
-            'foto' => null,
         ]);
 
-        User::create([
-            'username' => 'adminuser2',
-            'name' => 'Admin 2',
-            'role' => 'dishub',
-            'password' => Hash::make('password123'),
-            'foto' => null,
-        ]);
+        // User::create([
+        //     'username' => 'adminuser',
+        //     'name' => 'ADMIN',
+        //     'role' => 'admin',
+        //     'password' => Hash::make('password123'),
+        // ]);
+
+        // User::create([
+        //     'username' => 'visitoruser',
+        //     'name' => 'VISITOR',
+        //     'role' => 'visitor',
+        //     'password' => Hash::make('password123'),
+        // ]);
+
+        // User::create([
+        //     'username' => 'dishubuuser',
+        //     'name' => 'DISHUB',
+        //     'role' => 'dishub',
+        //     'password' => Hash::make('password123'),
+        // ]);
     }
 }
