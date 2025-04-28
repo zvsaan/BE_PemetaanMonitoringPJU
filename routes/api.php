@@ -16,6 +16,7 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\KonstruksiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\PengaduanController;
 
 // Route::get('/userberita', [BeritaController::class, 'index']);
 Route::get('/userberita', [BeritaController::class, 'getBeritaPagination']);
@@ -123,6 +124,19 @@ Route::middleware('auth:sanctum', 'role:admin')->group(function () {
 
     Route::get('/export-riwayat-pju/riwayat', [ExportController::class, 'exportRiwayatPJU']);
     Route::get('/export-riwayat-panel/riwayat', [ExportController::class, 'exportRiwayatPanel']);
+
+    //Pengaduan
+    Route::post('/pengaduan', [PengaduanController::class, 'create_pengaduan']);  // To create a complaint
+    Route::get('/pengaduan/export_excel', [PengaduanController::class, 'exportExcel']); 
+    Route::get('/export-template', [PengaduanController::class, 'exportTemplate']);
+    Route::get('/pengaduan/exportWord',[PengaduanController::class, 'exportToWord']);
+    Route::post('/import-pengaduan', [PengaduanController::class, 'import_pengaduan']); 
+    Route::get('/panel/{panel_id}/validate', [PengaduanController::class, 'validatePanel']);
+    Route::put('/pengaduan/{id_pengaduan}', [PengaduanController::class, 'update_pengaduan']);  // To update a complaint by ID
+    Route::get('/pengaduan', [PengaduanController::class, 'get_pengaduan']); // To view all complaints
+    Route::delete('/pengaduan/{id_pengaduan}', [PengaduanController::class, 'delete_pengaduan']);  // To delete a complaint by ID
+    Route::get('/pengaduan/count', [PengaduanController::class, 'count_pengaduan']);
+    Route::get('/pengaduan/{id_pengaduan}', [PengaduanController::class, 'get_detail_pengaduan']); 
 });
 
 //Admin
