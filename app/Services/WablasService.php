@@ -12,9 +12,9 @@ class WablasService
 
     public function __construct()
     {
-        $this->apiToken = env('WABLAS_API_TOKEN', 'xjG4dvzmFhDREvqYRAC7jjB4ZHydoaU4ki7qVkSTEHYDr8tf4ordWKULaxhO8gYl');
-        $this->baseUrl = 'https://tegal.wablas.com/api/v2';
-        $this->groupId = env('WABLAS_GROUP_ID', '120363373291153768'); // Set this in .env or hardcode here
+        $this->apiToken = env('WABLAS_API_TOKEN', 'RTDkpAmfFIvSUW0IOwKwCQCEot8iDfdbsN243cPIOQt2blFyDFAr86f');
+        $this->baseUrl = 'https://bdg.wablas.com/api/v2';
+        $this->groupId = env('WABLAS_GROUP_ID', '120363419294432193'); // Set this in .env or hardcode here
     }
 
     /**
@@ -29,6 +29,7 @@ class WablasService
 
         // Payload untuk mengirim pesan dengan gambar
         $payload = [
+            "secret" => env('WABLAS_SECRET'),
             "data" => [
                 [
                     'phone' => $this->groupId, // Menggunakan ID grup WhatsApp
@@ -47,7 +48,7 @@ class WablasService
         ]);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($payload));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);

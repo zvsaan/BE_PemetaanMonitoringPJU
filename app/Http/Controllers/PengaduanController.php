@@ -282,40 +282,40 @@ class PengaduanController extends Controller
         // Load relasi untuk response
         $pengaduan->load('detailPengaduans.panel', 'detailPengaduans.pju');
 
-        // Mengirim pesan ke WhatsApp setelah pengaduan dibuat
-        $message = "Nomor Pengaduan: " . $pengaduan->nomor_pengaduan . "\n";
-        $message .= "Pelapor: " . $pengaduan->pelapor . "\n";
-        $message .= "Kondisi Masalah: " . $pengaduan->kondisi_masalah . "\n";
-        if ($pengaduan->detailPengaduans->isNotEmpty()) {
-            foreach ($pengaduan->detailPengaduans as $detail) {
-                $message .= "Id Panel: " . ($detail->panel ? $detail->panel->panel_id : 'N/A') . "\n";
-            }
-        } else {
-            $message .= "Id Panel: N/A\n";
-        }
-        if ($pengaduan->detailPengaduans->isNotEmpty()) {
-            foreach ($pengaduan->detailPengaduans as $detail) {
-                $message .= "Id Tiang: " . ($detail->pju ? $detail->pju->pju_id : 'N/A') . "\n";
-            }
-        } else {
-            $message .= "Id Tiang: N/A\n";
-        }
-        $message .= "Lokasi: " . $pengaduan->lokasi . "\n";
-        $message .= "Tanggal Pengaduan: " . $pengaduan->tanggal_pengaduan . "\n";
-        $message .= "Jam Aduan: " . $pengaduan->jam_aduan . "\n";
-        $message .= "Jam Penginformasian: " . $pengaduan->jam_pengaduan . "\n";
-        $message .= "Keterangan Masalah: " . $pengaduan->keterangan_masalah . "\n";
-        $message .= "Status: " . $pengaduan->status . "\n";
+    //     // Mengirim pesan ke WhatsApp setelah pengaduan dibuat
+    //     $message = "Nomor Pengaduan: " . $pengaduan->nomor_pengaduan . "\n";
+    //     $message .= "Pelapor: " . $pengaduan->pelapor . "\n";
+    //     $message .= "Kondisi Masalah: " . $pengaduan->kondisi_masalah . "\n";
+    //     if ($pengaduan->detailPengaduans->isNotEmpty()) {
+    //         foreach ($pengaduan->detailPengaduans as $detail) {
+    //             $message .= "Id Panel: " . ($detail->panel ? $detail->panel->panel_id : 'N/A') . "\n";
+    //         }
+    //     } else {
+    //         $message .= "Id Panel: N/A\n";
+    //     }
+    //     if ($pengaduan->detailPengaduans->isNotEmpty()) {
+    //         foreach ($pengaduan->detailPengaduans as $detail) {
+    //             $message .= "Id Tiang: " . ($detail->pju ? $detail->pju->pju_id : 'N/A') . "\n";
+    //         }
+    //     } else {
+    //         $message .= "Id Tiang: N/A\n";
+    //     }
+    //     $message .= "Lokasi: " . $pengaduan->lokasi . "\n";
+    //     $message .= "Tanggal Pengaduan: " . $pengaduan->tanggal_pengaduan . "\n";
+    //     $message .= "Jam Aduan: " . $pengaduan->jam_aduan . "\n";
+    //     $message .= "Jam Penginformasian: " . $pengaduan->jam_pengaduan . "\n";
+    //     $message .= "Keterangan Masalah: " . $pengaduan->keterangan_masalah . "\n";
+    //     $message .= "Status: " . $pengaduan->status . "\n";
 
-        if ($pengaduan->foto_pengaduan) {
-            $fotoUrl = url('uploads/' . $pengaduan->foto_pengaduan); // Menyusun URL gambar
-            $response = $this->wablasService->sendMessageToGroup($message, $fotoUrl); // Kirim gambar
-        } else {
-            $response = $this->wablasService->sendMessageToGroup($message, null); // Kirim tanpa gambar
-        }
+    //     if ($pengaduan->foto_pengaduan) {
+    //         $fotoUrl = asset('uploads/' . $pengaduan->foto_pengaduan); // Menyusun URL gambar
+    //         $response = $this->wablasService->sendMessageToGroup($message, $fotoUrl); // Kirim gambar
+    //     } else {
+    //         $response = $this->wablasService->sendMessageToGroup($message, null); // Kirim tanpa gambar
+    //     }
 
-        return response()->json($pengaduan->load('detailPengaduans.panel', 'detailPengaduans.pju'), 200);
-    }
+    //     return response()->json($pengaduan->load('detailPengaduans.panel', 'detailPengaduans.pju'), 200);
+    // }
 
     // Memperbarui pengaduan
     public function update_pengaduan(Request $request, $id_pengaduan)
@@ -584,12 +584,10 @@ class PengaduanController extends Controller
     public function validatePanel($panel_id)
     {
         try {
-            // Cari pengaduan aktif (Pending/In Progress) yang terkait dengan panel
             $pengaduan = Pengaduan::whereHas('detailPengaduans', function ($query) use ($panel_id) {
                 $query->where('panel_id', $panel_id);
             })->whereIn('status', ['Pending', 'In Progress'])->first();
 
-            // Jika pengaduan ditemukan, panel tidak tersedia
             if ($pengaduan) {
                 return response()->json([
                     'message' => 'Panel ini tidak dapat dipilih karena sedang terhubung dengan pengaduan yang belum selesai.',
@@ -598,12 +596,10 @@ class PengaduanController extends Controller
                 ], 400);
             }
 
-            // Jika tidak ada pengaduan aktif, panel tersedia untuk dipilih
             return response()->json([
                 'message' => 'Panel tersedia untuk dipilih.'
             ], 200);
         } catch (Exception $e) {
-            // Log error dan kembalikan respons kesalahan
             Log::error("Error validating panel: " . $e->getMessage());
             return response()->json([
                 'message' => 'Terjadi kesalahan saat memvalidasi panel.',

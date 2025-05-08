@@ -76,8 +76,10 @@ Route::middleware('auth:sanctum', 'role:admin')->group(function () {
 
     //Filter
     Route::get('/kecamatan-list', [PJUController::class, 'getKecamatanList']);
-    Route::get('/filter-pju-by-panel', [PJUController::class, 'filterDataByPanel']);
+    Route::get('/filter-pju-by-panel/{panel_id}', [PJUController::class, 'filterDataByPanel']);
     Route::get('/dropdownpanels', [PanelController::class, 'dropdownPanels']);
+    Route::get('/panel/location/{id_panel}', [PanelController::class, 'getLocationByPanelId']);
+
 
     //Riwayat PJU
     Route::get('/riwayat-pju/{pju_id}', [RiwayatPJUController::class, 'index']);

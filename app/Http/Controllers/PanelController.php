@@ -159,4 +159,24 @@ class PanelController extends Controller
 
         return response()->json(['message' => 'Data Panel deleted successfully']);
     }
+
+    public function getLocationByPanelId($id_panel)
+    {
+        // Mencari DataPanel berdasarkan id_panel
+        $dataPanel = DataPanel::where('id_panel', $id_panel)->first();
+
+        // Jika tidak ditemukan, kembalikan pesan error
+        if (!$dataPanel) {
+            return response()->json(['message' => 'Data Panel not found'], 404);
+        }
+
+        // Ambil lokasi berdasarkan kolom yang relevan
+        $location = [
+            'nama_jalan' => $dataPanel->nama_jalan,
+            'desa_kel' => $dataPanel->desa_kel,
+            'kecamatan' => $dataPanel->kecamatan,
+        ];
+
+        return response()->json($location);
+    }
 }
