@@ -280,7 +280,7 @@ class PengaduanController extends Controller
         DetailPengaduan::insert($details);
 
         // Load relasi untuk response
-        $pengaduan->load('detailPengaduans.panel', 'detailPengaduans.pju');
+        $pengaduan->load('detailPengaduans.panel', 'detailPengaduans.pju');}
 
     //     // Mengirim pesan ke WhatsApp setelah pengaduan dibuat
     //     $message = "Nomor Pengaduan: " . $pengaduan->nomor_pengaduan . "\n";

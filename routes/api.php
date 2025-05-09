@@ -17,6 +17,16 @@ use App\Http\Controllers\KonstruksiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\PengaduanController;
+use App\Http\Controllers\NavbarController;
+
+//Navbar
+Route::get('/navbar', [NavbarController::class, 'index']);
+
+
+Route::get('/superadmin/navbar', [NavbarController::class, 'adminIndex']);
+Route::put('/superadmin/navbar/{id}', [NavbarController::class, 'update']);
+Route::put('/superadmin/navbar/{id}/toggle-publish', [NavbarController::class, 'togglePublish']);
+Route::delete('/superadmin/navbar/{id}', [NavbarController::class, 'destroy']);
 
 // Route::get('/userberita', [BeritaController::class, 'index']);
 Route::get('/userberita', [BeritaController::class, 'getBeritaPagination']);
@@ -33,30 +43,33 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //SuperAdmin
 Route::middleware(['auth:sanctum', 'role:superadmin'])->group(function () {
+
+    //User
     Route::get('/superadmin/dashboard-data', [SuperAdminController::class, 'getDashboardData']);
     Route::get('/users', [SuperAdminController::class, 'index']);
     Route::post('/users', [SuperAdminController::class, 'store']);
     Route::get('/users/{id}', [SuperAdminController::class, 'show']);
     Route::put('/users/{id}', [SuperAdminController::class, 'update']);
     Route::delete('/users/{id}', [SuperAdminController::class, 'destroy']);
-    Route::get('/superadmin/dashboard-data', [DashboardController::class, 'dashboardUserData']); 
-});
+    Route::get('/superadmin/dashboard-data', [DashboardController::class, 'dashboardUserData']);
 
-//Admin
-Route::middleware('auth:sanctum', 'role:admin')->group(function () {
     //Berita
     Route::get('/berita', [BeritaController::class, 'index']); 
     Route::post('/berita', [BeritaController::class, 'store']);
     Route::get('/berita/{id}', [BeritaController::class, 'show']);
     Route::post('/berita/{id}', [BeritaController::class, 'update']);
     Route::delete('/berita/{id}', [BeritaController::class, 'destroy']);
-
+    
     //Team
     Route::get('/teams', [TeamController::class, 'index']); 
     Route::post('/teams', [TeamController::class, 'store']);
     Route::get('/teams/{id}', [TeamController::class, 'show']);
     Route::post('/teams/{id}', [TeamController::class, 'update']);
     Route::delete('/teams/{id}', [TeamController::class, 'destroy']);
+});
+
+//Admin
+Route::middleware('auth:sanctum', 'role:admin')->group(function () {
 
     //Panel
     Route::get('/panels', [PanelController::class, 'index']); 
