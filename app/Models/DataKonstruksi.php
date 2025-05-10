@@ -31,6 +31,6 @@ class DataKonstruksi extends Model
     // Relasi ke PJU
     public function pju()
     {
-        return $this->belongsTo(DataPju::class, 'pju_id', 'id_pju');
+        return $this->belongsTo(DataPJU::class, 'pju_id', 'id_pju');
     }
 }

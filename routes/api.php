@@ -18,15 +18,13 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\NavbarController;
+use App\Http\Controllers\HeroSlideController;
 
 //Navbar
 Route::get('/navbar', [NavbarController::class, 'index']);
 
-
-Route::get('/superadmin/navbar', [NavbarController::class, 'adminIndex']);
-Route::put('/superadmin/navbar/{id}', [NavbarController::class, 'update']);
-Route::put('/superadmin/navbar/{id}/toggle-publish', [NavbarController::class, 'togglePublish']);
-Route::delete('/superadmin/navbar/{id}', [NavbarController::class, 'destroy']);
+//Hero Sider
+Route::get('/hero-slides', [HeroSlideController::class, 'index']);
 
 // Route::get('/userberita', [BeritaController::class, 'index']);
 Route::get('/userberita', [BeritaController::class, 'getBeritaPagination']);
@@ -52,6 +50,19 @@ Route::middleware(['auth:sanctum', 'role:superadmin'])->group(function () {
     Route::put('/users/{id}', [SuperAdminController::class, 'update']);
     Route::delete('/users/{id}', [SuperAdminController::class, 'destroy']);
     Route::get('/superadmin/dashboard-data', [DashboardController::class, 'dashboardUserData']);
+
+    //Navbar
+    Route::get('/superadmin/navbar', [NavbarController::class, 'adminIndex']);
+    Route::put('/superadmin/navbar/{id}', [NavbarController::class, 'update']);
+    Route::put('/superadmin/navbar/{id}/toggle-publish', [NavbarController::class, 'togglePublish']);
+    Route::delete('/superadmin/navbar/{id}', [NavbarController::class, 'destroy']);
+
+    //Hero Slide
+    Route::get('/admin/hero-slides', [HeroSlideController::class, 'adminIndex']);
+    Route::post('/admin/hero-slides', [HeroSlideController::class, 'store']);
+    Route::put('/admin/hero-slides/{id}', [HeroSlideController::class, 'update']);
+    Route::put('/admin/hero-slides/{id}/toggle-active', [HeroSlideController::class, 'toggleActive']);
+    Route::delete('/admin/hero-slides/{id}', [HeroSlideController::class, 'destroy']);
 
     //Berita
     Route::get('/berita', [BeritaController::class, 'index']); 
