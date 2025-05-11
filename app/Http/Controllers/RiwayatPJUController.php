@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DetailPengaduan;
 use Illuminate\Http\Request;
 
-class RiwayatPjuController extends Controller
+class RiwayatPJUController extends Controller
 {
     public function index($pju_id)
     {

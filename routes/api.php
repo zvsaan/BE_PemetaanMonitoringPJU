@@ -87,9 +87,14 @@ Route::middleware(['auth:sanctum', 'role:superadmin'])->group(function () {
 
 //Admin
 Route::middleware('auth:sanctum', 'role:admin')->group(function () {
-    //Catat KWH
-    Route::apiResource('kwh-readings', KwhReadingController::class);
-    Route::get('panels/{panelId}/kwh-readings', [KwhReadingController::class, 'panelReadings']);
+
+    //KWH
+    Route::get('/kwh-readings', [KwhReadingController::class, 'index']);
+    Route::post('/kwh-readings', [KwhReadingController::class, 'store']);
+    Route::get('/kwh-readings/{id}', [KwhReadingController::class, 'show']);
+    Route::put('/kwh-readings/{id}', [KwhReadingController::class, 'update']);
+    Route::delete('/kwh-readings/{id}', [KwhReadingController::class, 'destroy']);
+    Route::get('/panels/{panelId}/kwh-readings', [KwhReadingController::class, 'panelReadings']);
 
     //Panel
     Route::get('/panels', [PanelController::class, 'index']); 
@@ -174,7 +179,7 @@ Route::middleware('auth:sanctum', 'role:admin')->group(function () {
     Route::get('/pengaduan/{id_pengaduan}', [PengaduanController::class, 'get_detail_pengaduan']); 
 });
 
-//Admin
+//Visitor
 Route::middleware('auth:sanctum', 'role:visitor')->group(function () {
     Route::get('/visitor/panels', [PanelController::class, 'index']); 
     Route::get('/visitor/panels-with-status', [RiwayatPanelController::class, 'getPanelsWithStatus']);
