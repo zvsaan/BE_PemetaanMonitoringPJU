@@ -24,6 +24,6 @@ class DataPanel extends Model
 
     public function pjus()
     {
-        return $this->hasMany(DataPju::class, 'panel_id', 'id_panel');
+        return $this->hasMany(DataPJU::class, 'panel_id', 'id_panel');
     }
 }

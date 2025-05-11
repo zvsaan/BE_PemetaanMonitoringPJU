@@ -12,7 +12,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Panggil seeder untuk admin
-        $this->call(UserSeeder::class);
+        // $this->call(UserSeeder::class);
+        // $this->call(NavbarItemsSeeder::class);
+        $this->call(HeroSlidesSeeder::class);
         // $this->call(RiwayatPjuSeeder::class);
         // $this->call(RiwayatPanelSeeder::class);
         // $this->call(PengaduanSeeder::class);

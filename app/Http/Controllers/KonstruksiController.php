@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataKonstruksi;
-use App\Models\DataPju;
+use App\Models\DataPJU;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -49,7 +49,7 @@ class KonstruksiController extends Controller
         }
 
         // Cari PJU berdasarkan no_tiang_baru
-        $pju = DataPju::where('no_tiang_baru', $request->no_tiang_baru)->first();
+        $pju = DataPJU::where('no_tiang_baru', $request->no_tiang_baru)->first();
 
         if (!$pju) {
             return response()->json(['message' => 'No Tiang Baru tidak ditemukan'], 404);
@@ -100,7 +100,7 @@ class KonstruksiController extends Controller
             return response()->json(['message' => 'Data tidak ditemukan'], 404);
         }
 
-        $pju = DataPju::where('no_tiang_baru', $request->no_tiang_baru)->first();
+        $pju = DataPJU::where('no_tiang_baru', $request->no_tiang_baru)->first();
 
         $data->update([
             'pju_id' => $pju->id_pju,

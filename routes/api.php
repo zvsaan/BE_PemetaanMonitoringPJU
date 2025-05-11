@@ -18,13 +18,22 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\WablasController;
+use App\Http\Controllers\NavbarController;
+use App\Http\Controllers\HeroSlideController;
+use App\Http\Controllers\KwhReadingController;
+
+//Navbar
+Route::get('/navbar', [NavbarController::class, 'index']);
+
+//Hero Sider
+Route::get('/hero-slides', [HeroSlideController::class, 'index']);
 
 
 // Route::get('/userberita', [BeritaController::class, 'index']);
 Route::get('/userberita', [BeritaController::class, 'getBeritaPagination']);
 Route::get('/userberitaterbaru', [BeritaController::class, 'getBeritaTerbaru']);
 Route::get('/userberita/{slug}', [BeritaController::class, 'showtextrandom']);
-Route::get('/userteams', [TeamController::class, 'index']); 
+Route::get('/userteams', [TeamController::class, 'index']);
 
 
 Route::post('/kirimgambar', [WablasController::class, 'kirimGambarWablas']);
@@ -38,30 +47,49 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //SuperAdmin
 Route::middleware(['auth:sanctum', 'role:superadmin'])->group(function () {
+
+    //User
     Route::get('/superadmin/dashboard-data', [SuperAdminController::class, 'getDashboardData']);
     Route::get('/users', [SuperAdminController::class, 'index']);
     Route::post('/users', [SuperAdminController::class, 'store']);
     Route::get('/users/{id}', [SuperAdminController::class, 'show']);
     Route::put('/users/{id}', [SuperAdminController::class, 'update']);
     Route::delete('/users/{id}', [SuperAdminController::class, 'destroy']);
-    Route::get('/superadmin/dashboard-data', [DashboardController::class, 'dashboardUserData']); 
-});
+    Route::get('/superadmin/dashboard-data', [DashboardController::class, 'dashboardUserData']);
 
-//Admin
-Route::middleware('auth:sanctum', 'role:admin')->group(function () {
+    //Navbar
+    Route::get('/superadmin/navbar', [NavbarController::class, 'adminIndex']);
+    Route::put('/superadmin/navbar/{id}', [NavbarController::class, 'update']);
+    Route::put('/superadmin/navbar/{id}/toggle-publish', [NavbarController::class, 'togglePublish']);
+    Route::delete('/superadmin/navbar/{id}', [NavbarController::class, 'destroy']);
+
+    //Hero Slide
+    Route::get('/admin/hero-slides', [HeroSlideController::class, 'adminIndex']);
+    Route::post('/admin/hero-slides', [HeroSlideController::class, 'store']);
+    Route::put('/admin/hero-slides/{id}', [HeroSlideController::class, 'update']);
+    Route::put('/admin/hero-slides/{id}/toggle-active', [HeroSlideController::class, 'toggleActive']);
+    Route::delete('/admin/hero-slides/{id}', [HeroSlideController::class, 'destroy']);
+
     //Berita
     Route::get('/berita', [BeritaController::class, 'index']); 
     Route::post('/berita', [BeritaController::class, 'store']);
     Route::get('/berita/{id}', [BeritaController::class, 'show']);
     Route::post('/berita/{id}', [BeritaController::class, 'update']);
     Route::delete('/berita/{id}', [BeritaController::class, 'destroy']);
-
+    
     //Team
     Route::get('/teams', [TeamController::class, 'index']); 
     Route::post('/teams', [TeamController::class, 'store']);
     Route::get('/teams/{id}', [TeamController::class, 'show']);
     Route::post('/teams/{id}', [TeamController::class, 'update']);
     Route::delete('/teams/{id}', [TeamController::class, 'destroy']);
+});
+
+//Admin
+Route::middleware('auth:sanctum', 'role:admin')->group(function () {
+    //Catat KWH
+    Route::apiResource('kwh-readings', KwhReadingController::class);
+    Route::get('panels/{panelId}/kwh-readings', [KwhReadingController::class, 'panelReadings']);
 
     //Panel
     Route::get('/panels', [PanelController::class, 'index']); 
