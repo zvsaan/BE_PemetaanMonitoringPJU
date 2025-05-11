@@ -17,12 +17,17 @@ use App\Http\Controllers\KonstruksiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\PengaduanController;
+use App\Http\Controllers\WablasController;
+
 
 // Route::get('/userberita', [BeritaController::class, 'index']);
 Route::get('/userberita', [BeritaController::class, 'getBeritaPagination']);
 Route::get('/userberitaterbaru', [BeritaController::class, 'getBeritaTerbaru']);
 Route::get('/userberita/{slug}', [BeritaController::class, 'showtextrandom']);
 Route::get('/userteams', [TeamController::class, 'index']); 
+
+
+Route::post('/kirimgambar', [WablasController::class, 'kirimGambarWablas']);
 
 //Auth
 Route::post('/login', [AuthController::class, 'login']);
