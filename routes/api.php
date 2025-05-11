@@ -19,6 +19,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\NavbarController;
 use App\Http\Controllers\HeroSlideController;
+use App\Http\Controllers\KwhReadingController;
 
 //Navbar
 Route::get('/navbar', [NavbarController::class, 'index']);
@@ -81,6 +82,9 @@ Route::middleware(['auth:sanctum', 'role:superadmin'])->group(function () {
 
 //Admin
 Route::middleware('auth:sanctum', 'role:admin')->group(function () {
+    //Catat KWH
+    Route::apiResource('kwh-readings', KwhReadingController::class);
+    Route::get('panels/{panelId}/kwh-readings', [KwhReadingController::class, 'panelReadings']);
 
     //Panel
     Route::get('/panels', [PanelController::class, 'index']); 
