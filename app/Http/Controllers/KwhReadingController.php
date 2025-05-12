@@ -132,10 +132,8 @@ class KwhReadingController extends Controller
      */
     protected function storeImageWithWatermark($image, $panelId, $kwhNumber)
     {
-        // Dapatkan data panel
         $panel = DataPanel::find($panelId);
         
-        // Format teks watermark
         $watermarkLines = [
             'NO: ' . ($panel->no_app ?? 'N/A'),
             'LOK: ' . ($panel->nama_jalan ?? 'Lokasi tidak diketahui'),
@@ -146,16 +144,14 @@ class KwhReadingController extends Controller
         $imageName = 'kwh_' . time() . '.' . $image->getClientOriginalExtension();
         $storagePath = 'public/kwh_images/' . $imageName;
         $fullPath = storage_path('app/' . $storagePath);
-
-        // Buat direktori jika belum ada
+    
         if (!Storage::exists('public/kwh_images')) {
             Storage::makeDirectory('public/kwh_images');
         }
-
-        // Proses gambar
+    
         $sourcePath = $image->getRealPath();
         $imageType = exif_imagetype($sourcePath);
-
+    
         switch ($imageType) {
             case IMAGETYPE_JPEG:
                 $sourceImage = imagecreatefromjpeg($sourcePath);
@@ -166,25 +162,28 @@ class KwhReadingController extends Controller
             default:
                 throw new \Exception("Hanya format JPEG dan PNG yang didukung");
         }
-
-        // Warna dan font
-        $textColor = imagecolorallocate($sourceImage, 255, 255, 255); // Putih
-        $bgColor = imagecolorallocatealpha($sourceImage, 0, 0, 0, 60); // Hitam semi transparan
+    
+        // Dapatkan dimensi gambar
+        $imageWidth = imagesx($sourceImage);
+        $imageHeight = imagesy($sourceImage);
         
-        // Gunakan font TTF jika ada
+        // Hitung ukuran font berdasarkan lebar gambar (dinamis)
+        $baseFontSize = $imageWidth / 40; // Ukuran font dasar relatif terhadap lebar gambar
+        $fontSize = min(max($baseFontSize, 14), 24); // Batasi antara 14-24px
+        
+        $textColor = imagecolorallocate($sourceImage, 255, 255, 255);
+        $bgColor = imagecolorallocatealpha($sourceImage, 0, 0, 0, 60);
+        
         $fontPath = public_path('fonts/arial.ttf');
         $useTTF = file_exists($fontPath);
         
-        // Hitung ukuran watermark
-        $fontSize = $useTTF ? 14 : 3;
-        $lineHeight = $useTTF ? 25 : 15;
-        $padding = 10;
-        
-        // Hitung total tinggi watermark
+        // Hitung dimensi watermark
+        $padding = $imageWidth / 100; // Padding relatif
+        $lineHeight = $fontSize * 1.5;
         $watermarkHeight = (count($watermarkLines) * $lineHeight) + ($padding * 2);
         $watermarkWidth = 0;
         
-        // Cari teks terpanjang untuk lebar watermark
+        // Hitung lebar maksimum teks
         foreach ($watermarkLines as $line) {
             if ($useTTF) {
                 $box = imagettfbbox($fontSize, 0, $fontPath, $line);
@@ -193,18 +192,17 @@ class KwhReadingController extends Controller
                 $lineWidth = strlen($line) * imagefontwidth($fontSize);
             }
             
-            if ($lineWidth > $watermarkWidth) {
-                $watermarkWidth = $lineWidth;
-            }
+            $watermarkWidth = max($watermarkWidth, $lineWidth);
         }
         
         $watermarkWidth += ($padding * 2);
         
-        // Posisi watermark (kanan bawah)
-        $x = imagesx($sourceImage) - $watermarkWidth - $padding;
-        $y = imagesy($sourceImage) - $watermarkHeight - $padding;
+        // Posisi watermark (kanan bawah dengan margin)
+        $margin = $imageWidth / 20; // Margin relatif
+        $x = $imageWidth - $watermarkWidth - $margin;
+        $y = $imageHeight - $watermarkHeight - $margin;
         
-        // Gambar background watermark
+        // Gambar background
         imagefilledrectangle(
             $sourceImage, 
             $x, $y, 
@@ -212,7 +210,7 @@ class KwhReadingController extends Controller
             $bgColor
         );
         
-        // Tambahkan teks watermark per baris
+        // Tambahkan teks watermark
         foreach ($watermarkLines as $i => $line) {
             $textY = $y + $padding + ($i * $lineHeight);
             
@@ -238,17 +236,19 @@ class KwhReadingController extends Controller
                 );
             }
         }
-
-        // Simpan gambar
+    
+        // Kompresi gambar sebelum disimpan (untuk ukuran besar)
+        $quality = 80; // Kualitas gambar (0-100)
+        
         switch ($imageType) {
             case IMAGETYPE_JPEG:
-                imagejpeg($sourceImage, $fullPath, 90);
+                imagejpeg($sourceImage, $fullPath, $quality);
                 break;
             case IMAGETYPE_PNG:
-                imagepng($sourceImage, $fullPath, 9);
+                imagepng($sourceImage, $fullPath, round(9 * $quality / 100));
                 break;
         }
-
+    
         imagedestroy($sourceImage);
         return str_replace('public/', '', $storagePath);
     }

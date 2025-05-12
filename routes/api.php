@@ -150,6 +150,7 @@ Route::middleware('auth:sanctum', 'role:admin')->group(function () {
     Route::get('/export/pju', [ExportController::class, 'exportDataPJU']);
     Route::get('/export/panel', [ExportController::class, 'exportDataPanel']);
     Route::get('/export/konstruksi', [ExportController::class, 'exportDataKonstruksi']);
+    // Route::get('/export/kwh', [ExportController::class, 'exportCatatKWH']);
 
     //Riwayat BY ID
     Route::get('/export-riwayat-pju/riwayat/{pjuId}', [ExportController::class, 'exportByPJU']);
@@ -191,3 +192,5 @@ Route::middleware('auth:sanctum', 'role:visitor')->group(function () {
     Route::get('/visitor/konstruksi', [KonstruksiController::class, 'index']);
     Route::get('/visitor/dashboard-data', [DashboardController::class, 'getDashboardData']);
 });
+
+Route::get('/export/kwh', [ExportController::class, 'exportCatatKWH']);
