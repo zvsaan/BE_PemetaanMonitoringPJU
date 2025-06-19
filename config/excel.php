@@ -5,6 +5,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Csv;
 
 return [
     'exports' => [
+        'store_path' => public_path('exports'),
 
         /*
         |--------------------------------------------------------------------------

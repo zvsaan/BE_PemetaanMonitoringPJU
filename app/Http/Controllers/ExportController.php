@@ -22,6 +22,8 @@ use App\Exports\RiwayatPanelExport;
 use App\Exports\RiwayatPjuSpecificExport;
 use App\Exports\RiwayatPanelSpecificExport;
 
+use App\Exports\KwhReadingsExport;
+
 class ExportController extends Controller
 {
     public function exportDataPJU()
@@ -115,5 +117,17 @@ class ExportController extends Controller
     public function exportRiwayatPanel()
     {
         return Excel::download(new RiwayatPanelExport, 'Riwayat Panel.xlsx');
+    }
+    
+
+    //Export KWH
+    public function exportCatatKWH(Request $request)
+    {
+        $year = $request->input('year');
+        $month = $request->input('month');
+        
+        $fileName = 'data_kwh_' . ($year ?? 'all') . '_' . ($month ?? 'all') . '.xlsx';
+        
+        return Excel::download(new KwhReadingsExport($year, $month), $fileName);
     }
 }

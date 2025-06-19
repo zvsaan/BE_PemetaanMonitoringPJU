@@ -7,10 +7,12 @@
     "require": {
         "php": "^8.1",
         "guzzlehttp/guzzle": "^7.9",
+        "intervention/image": "^3.11",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "maatwebsite/excel": "^3.1",
+        "php-http/guzzle7-adapter": "^1.1",
         "silvanix/wablas": "^1.0"
     },
     "require-dev": {
