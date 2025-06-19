@@ -288,14 +288,14 @@ class PengaduanController extends Controller
     //     $message .= "Kondisi Masalah: " . $pengaduan->kondisi_masalah . "\n";
     //     if ($pengaduan->detailPengaduans->isNotEmpty()) {
     //         foreach ($pengaduan->detailPengaduans as $detail) {
-    //             $message .= "Id Panel: " . ($detail->panel ? $detail->panel->panel_id : 'N/A') . "\n";
+    //             $message .= "Id Panel: " . ($detail->panel ? $detail->panel->id_panel : 'N/A') . "\n";
     //         }
     //     } else {
     //         $message .= "Id Panel: N/A\n";
     //     }
     //     if ($pengaduan->detailPengaduans->isNotEmpty()) {
     //         foreach ($pengaduan->detailPengaduans as $detail) {
-    //             $message .= "Id Tiang: " . ($detail->pju ? $detail->pju->pju_id : 'N/A') . "\n";
+    //             $message .= "Id Tiang: " . ($detail->pju ? $detail->pju->id_pju : 'N/A') . "\n";
     //         }
     //     } else {
     //         $message .= "Id Tiang: N/A\n";
@@ -606,130 +606,6 @@ class PengaduanController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-    }
-
-    public function exportToWord()
-    {
-        // Ambil semua data pengaduan dan detail pengaduan
-        $pengaduans = Pengaduan::all(); // Mengambil semua data pengaduan
-        $detailPengaduans = DetailPengaduan::all(); // Mengambil semua data detail pengaduan
-
-        // Pastikan kita punya data untuk diproses
-        if ($pengaduans->isEmpty()) {
-            return response()->json(['message' => 'Tidak ada data pengaduan'], 400);
-        }
-
-        $phpWord = new PhpWord();
-
-        // Mengatur font default menjadi Times New Roman
-        $phpWord->setDefaultFontName('Times New Roman');
-        $phpWord->setDefaultFontSize(13); // Ukuran font default
-
-        // Mengulangi setiap pengaduan untuk membuat laporan
-        foreach ($pengaduans as $index => $pengaduan) {
-            // Buat section baru setiap dua pengaduan
-            if ($index % 2 == 0) {
-                $section = $phpWord->addSection();
-
-                // Menambahkan paragraf style untuk center
-                $phpWord->addParagraphStyle('centered', ['align' => 'center']);
-
-                // Menambahkan bagian judul dan memusatkan teks
-                $titleStyle = ['bold' => true, 'size' => 16];
-                $section->addText("Dokumentasi Pengaduan dan penanganan", $titleStyle, 'centered');
-                $section->addTextBreak(1); // Menambahkan jarak setelah judul
-            }
-
-            // Tambahkan garis pembatas di setiap awal pengaduan
-            $section->addLine([
-                'weight' => 2, // Ketebalan garis
-                'width' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(20), // Lebar garis dalam cm (20 cm = halaman penuh)
-                'height' => 0, // Tinggi garis tetap 0 untuk horizontal
-                'color' => '000000', // Warna hitam
-                'align' => 'center', // Pastikan garis tetap di tengah
-            ]);
-
-            $section->addText("Nomor Laporan: " . $pengaduan->nomor_pengaduan); // Mengambil nomor laporan
-            $panel = $detailPengaduans->firstWhere('pengaduan_id', $pengaduan->id_pengaduan);
-            $section->addText("Panel Nomor: " . ($panel ? $panel->panel_id : 'Tidak ada panel')); // Mengambil panel_id jika ada
-
-            // Menambahkan tabel untuk pengaduan dan penanganan
-            $section->addTextBreak(1); // Memberikan jarak antara teks dan tabel
-            $table = $section->addTable(['borderSize' => 12]);
-
-            // Menambahkan header tabel dengan teks yang dipusatkan secara horizontal dan vertikal
-            $table->addRow();
-            $table->addCell(6000, [
-                'valign' => 'center',  // Vertikal tengah
-                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER, // Horizontal tengah
-            ])->addText("Pengaduan", [
-                'bold' => true,
-                'align' => 'center', // Teks di tengah
-            ], [
-                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
-            ]);
-
-            $table->addCell(6000, [
-                'valign' => 'center',  // Vertikal tengah
-                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER, // Horizontal tengah
-            ])->addText("penanganan", [
-                'bold' => true,
-                'align' => 'center', // Teks di tengah
-            ], [
-                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
-            ]);
-
-            // Menambahkan gambar di bawah deskripsi
-            $table->addRow();
-            $cell1 = $table->addCell(6000, ['valign' => 'center', 'align' => 'center']);
-            if ($pengaduan->foto_pengaduan) {
-                $imagePath = public_path('storage/' . $pengaduan->foto_pengaduan);
-                if (file_exists($imagePath)) {
-                    $cell1->addImage($imagePath, [
-                        'width' => 100,
-                        'height' => 100,
-                        'wrappingStyle' => 'inline',
-                        'align' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
-                    ]);
-                } else {
-                    $cell1->addText('Gambar pengaduan tidak ditemukan');
-                }
-            } else {
-                $cell1->addText('Tidak ada gambar pengaduan');
-            }
-
-            $cell2 = $table->addCell(6000);
-            if ($pengaduan->foto_penanganan) {
-                $imagePath = public_path('storage/' . $pengaduan->foto_penanganan);
-                if (file_exists($imagePath)) {
-                    $cell2->addImage($imagePath, [
-                        'width' => 100,
-                        'height' => 100,
-                        'wrappingStyle' => 'inline',
-                        'align' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
-                    ]);
-                } else {
-                    $cell2->addText('Gambar penanganan tidak ditemukan');
-                }
-            } else {
-                $cell2->addText('Tidak ada gambar penanganan');
-            }
-
-            $section->addTextBreak(2);
-
-            // Tambahkan page break setelah setiap 2 pengaduan
-            if (($index + 1) % 2 == 0) {
-                $section->addPageBreak();
-            }
-        }
-
-        // Menyimpan file Word
-        $fileName = 'Laporan_Pengaduan_' . date('Y-m-d') . '.docx';
-        $filePath = storage_path('app/public/' . $fileName);
-        $phpWord->save($filePath, 'Word2007');
-
-        // Mengirim file ke browser untuk diunduh
-        return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
     public function filterPengaduan(Request $request)

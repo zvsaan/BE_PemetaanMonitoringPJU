@@ -164,7 +164,6 @@ Route::middleware('auth:sanctum', 'role:admin')->group(function () {
     Route::post('/pengaduan', [PengaduanController::class, 'create_pengaduan']);  // To create a complaint
     Route::get('/pengaduan/export_excel', [PengaduanController::class, 'exportExcel']); 
     Route::get('/export-template', [PengaduanController::class, 'exportTemplate']);
-    Route::get('/pengaduan/exportWord',[PengaduanController::class, 'exportToWord']);
     Route::post('/import-pengaduan', [PengaduanController::class, 'import_pengaduan']); 
     Route::get('/panel/{panel_id}/validate', [PengaduanController::class, 'validatePanel']);
     Route::put('/pengaduan/{id_pengaduan}', [PengaduanController::class, 'update_pengaduan']);  // To update a complaint by ID
